@@ -1,8 +1,8 @@
-<div class="max-w-6xl mx-auto p-6">
-  <h1 class="text-3xl font-bold mb-10 text-center">Ejemplos de Data Binding en Angular</h1>
+<div class="max-w-full mx-6 p-6">
+  <h1 class="text-3xl font-bold my-8 text-center">Ejemplos de Data Binding en Angular</h1>
 
   <!-- GRID RESPONSIVE -->
-  <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
     <!-- ================= INTERPOLATION ================= -->
     <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col gap-4">
       <h2 class="text-xl font-semibold text-blue-600">Interpolación</h2>
@@ -17,7 +17,8 @@
       <p class="text-gray-600">Enlazar propiedades del DOM</p>
 
       <button
-        class="py-2 rounded-lg text-white transition"
+        class="cursor-pointer py-2 rounded-lg text-white transition"
+        (click)="mostrarAlert()"
         [disabled]="deshabilitado"
         [class.bg-green-500]="!deshabilitado"
         [class.bg-gray-400]="deshabilitado"
@@ -25,7 +26,10 @@
         Botón con property binding
       </button>
 
-      <button class="text-sm underline text-green-600" (click)="deshabilitado = !deshabilitado">
+      <button
+        class="cursor-pointer text-sm underline text-green-600"
+        (click)="deshabilitado = !deshabilitado"
+      >
         Activar / Desactivar
       </button>
     </div>
@@ -43,6 +47,21 @@
       />
 
       <p class="bg-purple-50 text-purple-700 p-3 rounded-lg">Escribiste: {{ mensaje }}</p>
+    </div>
+
+    <!-- ================= EVENT BINDING ================= -->
+    <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-red-600">Event Binding</h2>
+      <p class="text-gray-600">Responder a eventos del usuario</p>
+
+      <button
+        class="cursor-pointer py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
+        (click)="incrementar()"
+      >
+        Haz click
+      </button>
+
+      <p class="bg-red-50 text-red-700 p-3 rounded-lg">Número de clicks: {{ contador }}</p>
     </div>
   </div>
 </div>

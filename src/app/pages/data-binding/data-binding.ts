@@ -16,6 +16,17 @@ export class DataBinding {
   // Property binding
   deshabilitado = false;
 
+  mostrarAlert() {
+    alert('Has pulsado el botón con property binding');
+  }
+
   // Two-way binding
   mensaje = '';
+
+  contador = 0;
+
+  // Event binding
+  incrementar() {
+    this.contador++;
+  }
 }

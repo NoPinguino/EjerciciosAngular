@@ -1,8 +1,8 @@
-<div class="max-w-6xl mx-auto p-6">
-  <h1 class="text-3xl font-bold mb-10 text-center">Ejemplos de Directivas en Angular</h1>
+<div class="max-w-full mx-6 p-6">
+  <h1 class="text-3xl font-bold my-8 text-center">Ejemplos de Directivas en Angular</h1>
 
   <!-- GRID RESPONSIVE -->
-  <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
     <!-- ================= NG IF CARD ================= -->
     <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col gap-4">
       <h2 class="text-xl font-semibold text-blue-600">*ngIf</h2>
@@ -27,10 +27,10 @@
 
       <ul class="space-y-2">
         <li
-          *ngFor="let lenguaje of lenguajes; index as i"
+          *ngFor="let animal of animales; index as i"
           class="bg-green-50 text-green-700 px-3 py-2 rounded-lg"
         >
-          {{ i + 1 }} - {{ lenguaje }}
+          {{ i + 1 }} - {{ animal }}
         </li>
       </ul>
     </div>

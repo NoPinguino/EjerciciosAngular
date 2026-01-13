@@ -12,7 +12,7 @@ export class Directivas {
   // ngIf
   mostrar = false;
   // ngFor
-  lenguajes = ['Angular', 'React', 'Vue', 'Svelte'];
+  animales = ['Perro', 'Gato', 'Conejo', 'Pájaro'];
   // ngSwitch
   nivel = 'basico';
 }
