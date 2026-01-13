@@ -1,0 +1,35 @@
+<div
+  class="p-6 rounded-xl shadow-md w-full mx-auto transition-colors duration-300"
+  [ngClass]="{
+    'bg-purple-200 text-purple-800': estilo === 'purple',
+    'bg-green-200 text-green-800': estilo === 'green',
+    'bg-yellow-100 text-yellow-800': estilo === 'yellow',
+    'bg-white text-gray-800 dark:bg-gray-800 dark:text-gray-200': estilo === ''
+  }"
+>
+  <p class="text-center font-semibold mb-4">Soy el hijo, envía un mensaje al padre</p>
+  <input
+    type="text"
+    [(ngModel)]="mensaje"
+    placeholder="Escribe un mensaje"
+    [ngClass]="{
+      'border-purple-300 focus:border-purple-500 focus:ring-purple-200': estilo === 'purple',
+      'border-green-300 focus:border-green-500 focus:ring-green-200': estilo === 'green',
+      'border-yellow-300 focus:border-yellow-500 focus:ring-yellow-200': estilo === 'yellow',
+      'border-gray-300 focus:border-gray-500 focus:ring-gray-200': estilo === ''
+    }"
+    class="w-full px-3 py-2 mb-4 rounded border border-gray-300 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+  />
+  <button
+    (click)="enviarMensaje()"
+    [ngClass]="{
+      'bg-purple-600 hover:bg-purple-700 text-white': estilo === 'purple',
+      'bg-green-500 hover:bg-green-600 text-white': estilo === 'green',
+      'bg-yellow-400 hover:bg-yellow-500 text-white': estilo === 'yellow',
+      'bg-gray-300 hover:bg-gray-400 text-gray-800': estilo === ''
+    }"
+    class="w-full py-2 rounded-lg transition"
+  >
+    Enviar
+  </button>
+</div>
