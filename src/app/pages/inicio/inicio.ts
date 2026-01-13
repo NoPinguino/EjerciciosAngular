@@ -1,11 +1,18 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-inicio',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './inicio.html',
-  styleUrl: './inicio.css',
+  styleUrls: ['./inicio.css'], // corregido plural
 })
 export class Inicio {
+  constructor(private router: Router) {}
 
+  navigateTo(path: string) {
+    this.router.navigate([path]);
+  }
 }
