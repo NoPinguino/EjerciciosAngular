@@ -1,0 +1,12 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import 'tailwindcss';
+/*
+@import 'tailwindcss/utilities' layer(utilities);
+
+@layer components {
+  .text_active-aside {
+    @apply text-gray-100 font-extrabold;
+  }
+}
+*/

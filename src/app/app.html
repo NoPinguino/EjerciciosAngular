@@ -1,0 +1,28 @@
+<div class="h-screen bg-gray-50 dark:bg-gray-900 md:grid md:grid-cols-5">
+
+  <!-- Desktop sidebar -->
+  <aside class="z-20 hidden md:block overflow-y-auto bg-white dark:bg-gray-800 md:col-span-1">
+    <app-aside></app-aside>
+  </aside>
+
+  <!-- Mobile sidebar -->
+  <!-- Backdrop -->
+  @if (isSideMenuOpen()) {
+  <div (click)="closeSideMenu()"
+    class="fixed inset-0 z-10 flex items-end bg-black bg-opacity-50 sm:items-center sm:justify-center">
+  </div>
+  }
+
+  @if (isSideMenuOpen()) {
+  <aside class="fixed inset-y-0 z-20 w-64 overflow-y-auto bg-white dark:bg-gray-800 md:hidden">
+    <app-aside-m></app-aside-m>
+  </aside>
+  }
+
+
+  <div class="col-span-5 md:col-span-4 bg-gray-50">
+    <app-header class="col-span-5 md:col-span-4" (toggleSideMenu)="toggleSideMenu()"></app-header>
+    <app-body></app-body>
+  </div>
+
+</div>

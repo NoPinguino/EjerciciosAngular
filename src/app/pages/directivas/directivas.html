@@ -1,0 +1,60 @@
+<div class="max-w-6xl mx-auto p-6">
+  <h1 class="text-3xl font-bold mb-10 text-center">Ejemplos de Directivas en Angular</h1>
+
+  <!-- GRID RESPONSIVE -->
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <!-- ================= NG IF CARD ================= -->
+    <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-blue-600">*ngIf</h2>
+      <p class="text-gray-600">Renderizado condicional de elementos</p>
+
+      <button
+        class="bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
+        (click)="mostrar = !mostrar"
+      >
+        {{ mostrar ? 'Ocultar mensaje' : 'Mostrar mensaje' }}
+      </button>
+
+      <p *ngIf="mostrar" class="bg-blue-50 text-blue-700 p-3 rounded-lg">
+        Este mensaje se muestra usando <strong>*ngIf</strong>
+      </p>
+    </div>
+
+    <!-- ================= NG FOR CARD ================= -->
+    <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-green-600">*ngFor</h2>
+      <p class="text-gray-600">Generación dinámica de listas</p>
+
+      <ul class="space-y-2">
+        <li
+          *ngFor="let lenguaje of lenguajes; index as i"
+          class="bg-green-50 text-green-700 px-3 py-2 rounded-lg"
+        >
+          {{ i + 1 }} - {{ lenguaje }}
+        </li>
+      </ul>
+    </div>
+
+    <!-- ================= NG SWITCH CARD ================= -->
+    <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-purple-600">*ngSwitch</h2>
+      <p class="text-gray-600">Mostrar contenido según selección</p>
+
+      <select
+        [(ngModel)]="nivel"
+        class="border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+      >
+        <option value="basico">Básico</option>
+        <option value="intermedio">Intermedio</option>
+        <option value="avanzado">Avanzado</option>
+      </select>
+
+      <div [ngSwitch]="nivel" class="p-3 rounded-lg bg-purple-50 text-purple-700">
+        <p *ngSwitchCase="'basico'">Nivel básico seleccionado</p>
+        <p *ngSwitchCase="'intermedio'">Nivel intermedio seleccionado</p>
+        <p *ngSwitchCase="'avanzado'">Nivel avanzado seleccionado</p>
+        <p *ngSwitchDefault>Selecciona un nivel</p>
+      </div>
+    </div>
+  </div>
+</div>
