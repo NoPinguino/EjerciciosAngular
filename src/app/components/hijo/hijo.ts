@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common'; // <-- IMPORTANTE
 @Component({
   selector: 'app-hijo',
   standalone: true,
-  imports: [FormsModule, CommonModule], // <-- agrega CommonModule
+  imports: [FormsModule, CommonModule],
   templateUrl: './hijo.html',
   styleUrl: './hijo.css',
 })
