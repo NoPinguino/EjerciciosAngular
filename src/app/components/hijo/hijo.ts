@@ -7,7 +7,6 @@ import { CommonModule } from '@angular/common'; // <-- IMPORTANTE
   standalone: true,
   imports: [FormsModule, CommonModule],
   templateUrl: './hijo.html',
-  styleUrl: './hijo.css',
 })
 export class Hijo {
   @Input() estilo: string = ''; // Recibe el estilo del padre

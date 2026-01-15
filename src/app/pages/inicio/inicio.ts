@@ -7,7 +7,6 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './inicio.html',
-  styleUrls: ['./inicio.css'], // corregido plural
 })
 export class Inicio {
   constructor(private router: Router) {}

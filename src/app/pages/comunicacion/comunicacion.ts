@@ -2,13 +2,14 @@ import { Component } from '@angular/core';
 import { Hijo } from '../../components/hijo/hijo';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MessageSender } from '../../components/message-sender/message-sender';
+import { MessageViewer } from '../../components/message-viewer/message-viewer';
 
 @Component({
   selector: 'app-comunicacion',
   standalone: true,
-  imports: [Hijo, FormsModule, CommonModule],
+  imports: [Hijo, FormsModule, CommonModule, MessageSender, MessageViewer],
   templateUrl: './comunicacion.html',
-  styleUrl: './comunicacion.css',
 })
 export class Comunicacion {
   mensajeDelHijo: string = '';

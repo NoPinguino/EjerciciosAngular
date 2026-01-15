@@ -1,76 +1,93 @@
-<div class="max-w-3xl mx-auto p-6 space-y-8">
+<div class="max-w-full mx-auto p-6 space-y-8">
   <!-- Título principal -->
   <h1 class="text-4xl font-extrabold text-center text-gray-800 dark:text-gray-100 mb-8">
     Comunicación entre componentes
   </h1>
 
-  <!-- Selector de estilo -->
-  <div class="flex flex-col items-center space-y-4">
-    <p class="font-semibold text-gray-700 dark:text-gray-300 text-lg text-center">
-      Selecciona un estilo para el hijo:
-    </p>
-    <div class="flex gap-4 flex-wrap justify-center">
-      <!-- Botón Morado -->
-      <button
-        (click)="colorSeleccionado='purple'"
-        [ngClass]="colorSeleccionado === 'purple'
-          ? 'bg-purple-800 text-white'
-          : 'bg-purple-600 text-white hover:bg-purple-700'"
-        class="w-36 px-6 py-3 cursor-pointer rounded-lg shadow transition"
-      >
-        Morado
-      </button>
+  <section class="space-y-8">
+    <h2 class="text-3xl font-semibold mt-8 mb-4 text-center">Comunicación: @Input y @Output.</h2>
+    <!-- Selector de estilo -->
+    <div class="flex flex-col items-center space-y-4">
+      <p class="font-semibold text-gray-700 dark:text-gray-300 text-lg text-center">
+        Selecciona un estilo para el hijo:
+      </p>
+      <div class="flex gap-4 flex-wrap justify-center">
+        <!-- Botón Morado -->
+        <button
+          (click)="colorSeleccionado='purple'"
+          [ngClass]="colorSeleccionado === 'purple'
+            ? 'bg-purple-800 text-white'
+            : 'bg-purple-600 text-white hover:bg-purple-700'"
+          class="w-36 px-6 py-3 cursor-pointer rounded-lg shadow transition"
+        >
+          Morado
+        </button>
 
-      <!-- Botón Verde -->
-      <button
-        (click)="colorSeleccionado='green'"
-        [ngClass]="colorSeleccionado === 'green'
-          ? 'bg-green-700 text-white'
-          : 'bg-green-500 text-white hover:bg-green-600'"
-        class="w-36 px-6 py-3 cursor-pointer rounded-lg shadow transition"
-      >
-        Verde
-      </button>
+        <!-- Botón Verde -->
+        <button
+          (click)="colorSeleccionado='green'"
+          [ngClass]="colorSeleccionado === 'green'
+            ? 'bg-green-700 text-white'
+            : 'bg-green-500 text-white hover:bg-green-600'"
+          class="w-36 px-6 py-3 cursor-pointer rounded-lg shadow transition"
+        >
+          Verde
+        </button>
 
-      <!-- Botón Amarillo -->
-      <button
-        (click)="colorSeleccionado='yellow'"
-        [ngClass]="colorSeleccionado === 'yellow'
-          ? 'bg-yellow-600 text-white'
-          : 'bg-yellow-400 text-white hover:bg-yellow-500'"
-        class="w-36 px-6 py-3 cursor-pointer rounded-lg shadow transition"
-      >
-        Amarillo
-      </button>
+        <!-- Botón Amarillo -->
+        <button
+          (click)="colorSeleccionado='yellow'"
+          [ngClass]="colorSeleccionado === 'yellow'
+            ? 'bg-yellow-600 text-white'
+            : 'bg-yellow-400 text-white hover:bg-yellow-500'"
+          class="w-36 px-6 py-3 cursor-pointer rounded-lg shadow transition"
+        >
+          Amarillo
+        </button>
 
-      <!-- Botón Restablecer -->
-      <button
-        (click)="colorSeleccionado=''"
-        [ngClass]="colorSeleccionado === ''
-          ? 'bg-gray-500 text-white'
-          : 'bg-gray-300 text-gray-800 hover:bg-gray-400'"
-        class="w-36 px-6 py-3 cursor-pointer rounded-lg shadow transition"
-      >
-        Restablecer
-      </button>
+        <!-- Botón Restablecer -->
+        <button
+          (click)="colorSeleccionado=''"
+          [ngClass]="colorSeleccionado === ''
+            ? 'bg-gray-500 text-white'
+            : 'bg-gray-300 text-gray-800 hover:bg-gray-400'"
+          class="w-36 px-6 py-3 cursor-pointer rounded-lg shadow transition"
+        >
+          Restablecer
+        </button>
+      </div>
     </div>
-  </div>
 
-  <!-- Mensaje recibido del hijo -->
-  <div
-    *ngIf="mensajeDelHijo"
-    class="p-6 bg-gray-50 dark:bg-gray-900 rounded-xl shadow-lg text-center border border-gray-200 dark:border-gray-700 w-full mx-auto"
-  >
-    <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Mensaje del hijo:</p>
-    <p class="text-xl font-semibold text-gray-800 dark:text-gray-100 wrap-break-word">
-      {{ mensajeDelHijo }}
+    <!-- Mensaje recibido del hijo -->
+    <div
+      *ngIf="mensajeDelHijo"
+      class="p-6 bg-gray-50 dark:bg-gray-900 rounded-xl shadow-lg text-center border border-gray-200 dark:border-gray-700 w-full mx-auto"
+    >
+      <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Mensaje del hijo:</p>
+      <p class="text-xl font-semibold text-gray-800 dark:text-gray-100 wrap-break-word">
+        {{ mensajeDelHijo }}
+      </p>
+    </div>
+
+    <!-- Componente Hijo -->
+    <app-hijo
+      [estilo]="colorSeleccionado"
+      (mensajeAlPadre)="recibirMensaje($event)"
+      class="w-full mx-auto block"
+    ></app-hijo>
+  </section>
+
+  <section class="max-w-full mx-auto space-y-6">
+    <h2 class="text-3xl font-bold text-center">Comunicación con servicio (Store + Signals)</h2>
+
+    <p class="text-center text-gray-600">
+      Dos componentes se comunican usando un servicio con estado compartido, sin relación
+      padre-hijo.
     </p>
-  </div>
 
-  <!-- Componente Hijo -->
-  <app-hijo
-    [estilo]="colorSeleccionado"
-    (mensajeAlPadre)="recibirMensaje($event)"
-    class="w-full mx-auto block"
-  ></app-hijo>
+    <div class="grid md:grid-cols-2 gap-6">
+      <app-message-sender></app-message-sender>
+      <app-message-viewer></app-message-viewer>
+    </div>
+  </section>
 </div>

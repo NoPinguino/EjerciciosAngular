@@ -7,7 +7,6 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './data-binding.html',
-  styleUrls: ['./data-binding.css'],
 })
 export class DataBinding {
   // Interpolation

@@ -7,7 +7,6 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './directivas.html',
-  styleUrl: './directivas.css',
 })
 export class Directivas {
   /* ================= DIRECTIVAS ESTRUCTURALES ================= */

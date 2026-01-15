@@ -4,8 +4,5 @@ import { Component } from '@angular/core';
   selector: 'app-http-client',
   imports: [],
   templateUrl: './http-client.html',
-  styleUrl: './http-client.css',
 })
-export class HttpClient {
-
-}
+export class HttpClient {}

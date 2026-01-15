@@ -4,8 +4,5 @@ import { Component } from '@angular/core';
   selector: 'app-formularios',
   imports: [],
   templateUrl: './formularios.html',
-  styleUrl: './formularios.css',
 })
-export class Formularios {
-
-}
+export class Formularios {}
