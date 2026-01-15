@@ -1,14 +1,15 @@
 import { Component, ElementRef, HostListener, signal } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { Aside } from './aside/aside';
 import { AsideM } from './aside-m/aside-m';
-import { Body } from './body/body';
 import { Header } from './header/header';
 
 @Component({
   selector: 'app-root',
-  imports: [Aside, AsideM, Body, Header],
+  standalone: true,
+  imports: [RouterOutlet, Aside, AsideM, Header],
   templateUrl: './app.html',
-  styleUrl: './app.css',
+  styleUrls: ['./app.css'], // <-- CORREGIDO
 })
 export class App {
   protected readonly title = signal('Ejercicios Angular');

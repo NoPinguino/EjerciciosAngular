@@ -6,6 +6,7 @@ import { Formularios } from './pages/formularios/formularios';
 import { Servicios } from './pages/servicios/servicios';
 import { HttpClient } from './pages/http-client/http-client';
 import { DataBinding } from './pages/data-binding/data-binding';
+import { PokemonDetalles } from './pages/pokemon-detalles/pokemon-detalles';
 
 export const routes: Routes = [
   {
@@ -23,6 +24,10 @@ export const routes: Routes = [
   {
     path: 'comunicacion',
     component: Comunicacion,
+  },
+  {
+    path: 'pokemon/:id',
+    component: PokemonDetalles,
   },
   {
     path: 'formularios',

@@ -1,1 +1,115 @@
-<p>formularios works!</p>
+<main class="max-w-full mx-auto p-6">
+  <h1 class="text-4xl font-extrabold text-center text-gray-800 dark:text-gray-100 mb-8">
+    Formularios Reactivos
+  </h1>
+
+  <form
+    [formGroup]="practicaForm"
+    (ngSubmit)="enviarFormulario()"
+    class="bg-white dark:bg-gray-900 shadow-lg rounded-xl p-6 space-y-6 border border-gray-200 dark:border-gray-700"
+  >
+    <!-- Nombre y Apellidos -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <label class="block text-gray-700 dark:text-gray-300 font-medium mb-1">Nombre</label>
+        <input
+          type="text"
+          formControlName="nombre"
+          class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-400"
+          placeholder="Nombre"
+        />
+        <div
+          *ngIf="practicaForm.get('nombre')?.touched && practicaForm.get('nombre')?.invalid"
+          class="text-red-500 text-sm mt-1"
+        >
+          El nombre es obligatorio
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-gray-700 dark:text-gray-300 font-medium mb-1">Apellido 1</label>
+        <input
+          type="text"
+          formControlName="apellido1"
+          class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-400"
+          placeholder="Apellido 1"
+        />
+        <div
+          *ngIf="practicaForm.get('apellido1')?.touched && practicaForm.get('apellido1')?.invalid"
+          class="text-red-500 text-sm mt-1"
+        >
+          El apellido es obligatorio
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-gray-700 dark:text-gray-300 font-medium mb-1">Apellido 2</label>
+        <input
+          type="text"
+          formControlName="apellido2"
+          class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-400"
+          placeholder="Apellido 2"
+        />
+        <div
+          *ngIf="practicaForm.get('apellido2')?.touched && practicaForm.get('apellido2')?.invalid"
+          class="text-red-500 text-sm mt-1"
+        >
+          El apellido es obligatorio
+        </div>
+      </div>
+    </div>
+
+    <!-- Email -->
+    <div>
+      <label class="block text-gray-700 dark:text-gray-300 font-medium mb-1">Email</label>
+      <input
+        type="email"
+        formControlName="email"
+        class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-400"
+        placeholder="Email"
+      />
+      <div
+        *ngIf="practicaForm.get('email')?.touched && practicaForm.get('email')?.hasError('required')"
+        class="text-red-500 text-sm mt-1"
+      >
+        El email es obligatorio
+      </div>
+      <div
+        *ngIf="practicaForm.get('email')?.touched && practicaForm.get('email')?.hasError('email')"
+        class="text-red-500 text-sm mt-1"
+      >
+        El email no es válido
+      </div>
+    </div>
+
+    <!-- Checkbox política -->
+    <div class="flex items-center gap-3">
+      <input
+        type="checkbox"
+        formControlName="aceptoPolitica"
+        id="politica"
+        class="h-5 w-5 text-purple-600 focus:ring-purple-400 border-gray-300 rounded"
+      />
+      <label for="politica" class="text-gray-700 dark:text-gray-300">
+        Acepto la política de privacidad
+      </label>
+    </div>
+    <div
+      *ngIf="practicaForm.get('aceptoPolitica')?.touched && practicaForm.get('aceptoPolitica')?.invalid"
+      class="text-red-500 text-sm mt-1"
+    >
+      Debes aceptar la política
+    </div>
+
+    <!-- Botón de envío -->
+    <div class="text-center mt-6">
+      <button
+        type="submit"
+        [disabled]="practicaForm.invalid"
+        class="bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold shadow hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+      >
+        Enviar
+      </button>
+    </div>
+  </form>
+</main>
