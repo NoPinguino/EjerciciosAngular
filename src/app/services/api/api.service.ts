@@ -1,6 +1,6 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
 // ========================================
 // INTERFACES (Tipos de datos)
@@ -61,23 +61,6 @@ export class ApiService {
   // ====================================
 
   /**
-   * BehaviorSubject - Observable con estado inicial
-   *
-   * ¿Qué es? Un tipo especial de Observable que:
-   * 1. Guarda el último valor emitido
-   * 2. Emite ese valor inmediatamente a nuevos suscriptores
-   * 3. Permite PROPAGAR cambios a TODOS los componentes suscritos
-   *
-   * ¿Para qué? Para compartir el array de corredores entre componentes
-   * sin que tengan relación padre-hijo. Cualquier componente puede
-   * suscribirse y recibir actualizaciones automáticamente.
-   *
-   * Ejemplo: Si actualizas los corredores en el componente A,
-   * el componente B los verá automáticamente sin hacer nada.
-   */
-  listaCorredores$ = new BehaviorSubject<Corredor[]>([]);
-
-  /**
    * Signal - Estado reactivo de Angular (nueva API)
    *
    * ¿Qué es? Una variable reactiva que notifica cambios automáticamente
@@ -96,42 +79,8 @@ export class ApiService {
   // ====================================
 
   /**
-   * LOGIN - Autenticación de usuario
+   * OBSERVER QUE RECIBE EL JSON.
    *
-   * ¿Qué hace?
-   * - Envía credenciales (email y contraseña) al servidor
-   * - El servidor valida y devuelve un token JWT
-   *
-   * @param email - Correo electrónico del usuario
-   * @param password - Contraseña del usuario
-   * @returns Observable<LoginResponse> - Stream con la respuesta del servidor
-   *
-   * ¿Por qué Observable?
-   * Porque las peticiones HTTP son ASÍNCRONAS (tardan tiempo).
-   * El Observable emite el valor cuando la respuesta llega del servidor.
-   *
-   * Uso en componente:
-   * this.api.login(email, pass).subscribe(respuesta => {
-   *   console.log(respuesta.token); // Token recibido
-   * });
-   */
-  login(email: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(
-      this.urlBase,
-      {
-        usuario: email, // Campo que espera el servidor
-        clave: password, // Campo que espera el servidor
-        accion: 'validar', // Le decimos al servidor que queremos validar usuario
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json', // Indicamos que enviamos JSON
-        },
-      },
-    );
-  }
-
-  /**
    * GET CORREDORES - Obtener lista de corredores
    *
    * ¿Qué hace?
