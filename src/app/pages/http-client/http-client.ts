@@ -36,23 +36,10 @@ export class HttpClientComponent {
   // ESTADO DEL COMPONENTE
   // ====================================
 
-  /**
-   * Signal que indica si hay una petición en curso
-   *
-   * Uso:
-   * - Leer: if (this.cargando())
-   * - Cambiar: this.cargando.set(true)
-   *
-   * En el template se usa para:
-   * - Deshabilitar botones
-   * - Mostrar spinners de carga
-   */
+  // Utilzo un signal para mostrar texto 'cargando...', es una decisión estética, no es necesario.
   cargando = signal(false);
 
-  /**
-   * Array local que almacena los corredores
-   * Se usa para mostrar la lista en el template con @for
-   */
+  // Array local en la que almaceno los corredores recibidos por el servicio observable.
   corredores: Corredor[] = [];
 
   /**
@@ -75,19 +62,18 @@ export class HttpClientComponent {
    * CARGAR CORREDORES - Obtiene la lista desde el servidor
    *
    * Flujo completo:
-   * 1. Activamos el indicador de carga (spinner)
-   * 2. Obtenemos el token del localStorage (si existe)
-   * 3. Hacemos la petición HTTP GET
-   * 4. Transformamos los datos con el operador map() (opcional)
-   * 5. Guardamos los datos en el array local
-   * 6. Desactivamos el indicador de carga
+   * 1. Activamos el indicador de carga (estético/opcional)
+   * 2. Obtenemos el token del localStorage (si existe, si no lo cramos como string vacio)
+   * 3. Hacemos la petición HTTP GET (this.api.obtenerCorredores())
+   * 4. Guardamos los datos en el array local
+   * 5. Desactivamos el indicador de carga (estético/opcional)
    *
    * Operadores RxJS usados:
    * - pipe(): Permite encadenar operadores
    * - map(): Transforma los datos antes de recibirlos
    */
   cargarCorredores() {
-    // 1. Activamos el indicador de carga
+    // 1. Activamos el indicador de carga (opcional, es por estílo)
     this.cargando.set(true);
 
     // 2. Obtenemos el token (si no existe, usamos string vacío)
@@ -96,13 +82,12 @@ export class HttpClientComponent {
     // 3. Hacemos la petición HTTP
     this.api
       .obtenerCorredores(token)
+      // pipe() permite encadenar operadores
       .pipe(
-        // 4. OPERADOR MAP - Transforma los datos
-        // En este ejemplo solo los mostramos, pero podrías:
-        // - Filtrar corredores por categoría
-        // - Ordenarlos alfabéticamente
-        // - Añadir propiedades calculadas
-        // - Etc.
+        /**
+         * map() se puede utilizar para filtrar corredores.
+         * En este caso solo se utiliza para mostrar mensajes en consola.
+         */
         map((corredores) => {
           console.log('📦 Datos recibidos del servidor:', corredores);
           console.log(`📊 Total de corredores: ${corredores.length}`);
@@ -112,12 +97,11 @@ export class HttpClientComponent {
       .subscribe({
         // SUCCESS: Datos recibidos correctamente
         next: (corredores) => {
-          // Guardamos los corredores en el estado local
+          // Guardamos los corredores en el estado local recibidos por el observable:
           this.corredores = corredores;
-
-          // Desactivamos el indicador de carga
+          // Actualizamos cargando una vez ya ha cargado para quitar la animación:
           this.cargando.set(false);
-
+          // Para ver en consola que todo fue bien:
           console.log('✅ Corredores cargados correctamente en el componente');
         },
 
@@ -127,12 +111,13 @@ export class HttpClientComponent {
           this.cargando.set(false);
 
           console.error('❌ Error al cargar corredores:', error);
-
-          // Mensajes de error comunes:
-          // - 401: Token inválido o expirado
-          // - 403: Sin permisos
-          // - 500: Error del servidor
-          // - 0: Sin conexión a internet
+          /**
+           * Mensajes de error comunes:
+           * - 401: Token inválido o expirado
+           * - 403: Sin permisos
+           * - 500: Error del servidor
+           * - 0: Sin conexión a internet
+           */
         },
       });
   }

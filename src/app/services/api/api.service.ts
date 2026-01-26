@@ -16,14 +16,6 @@ export interface Corredor {
   categoria: string; // Categoría (junior, senior, etc.)
 }
 
-/**
- * Interfaz que define la respuesta del login
- * El servidor devuelve un token JWT para autenticación
- */
-export interface LoginResponse {
-  token: string; // Token de autenticación JWT
-}
-
 // ========================================
 // SERVICIO API
 // ========================================
@@ -79,25 +71,16 @@ export class ApiService {
   // ====================================
 
   /**
-   * OBSERVER QUE RECIBE EL JSON.
-   *
    * GET CORREDORES - Obtener lista de corredores
    *
    * ¿Qué hace?
    * - Pide al servidor la lista completa de corredores
    * - Requiere autenticación (token en headers)
    *
-   * @param token - Token JWT obtenido en el login
+   * @param token - Token, en mi caso es un string vacio, no hay autenticación.
    * @returns Observable<Corredor[]> - Stream con el array de corredores
    *
-   * ¿Cómo funciona la autenticación?
-   * El token se envía en el header "Authorization" con formato:
-   * "Bearer tu_token_aquí"
-   *
-   * El servidor valida el token y si es válido, devuelve los datos.
-   * Si no es válido, devuelve error 401 (No autorizado)
-   *
-   * Uso en componente:
+   * ¿CÓMO USAR EN EL COMPONENTE?:
    * this.api.getCorredores(miToken).subscribe(corredores => {
    *   console.log(corredores); // Array de corredores
    * });
@@ -105,7 +88,7 @@ export class ApiService {
   obtenerCorredores(token: string): Observable<Corredor[]> {
     return this.http.get<Corredor[]>(this.urlBase, {
       headers: {
-        Authorization: `Bearer ${token}`, // Token para autenticar
+        Authorization: token, // Token para autenticar
         'Content-Type': 'application/json', // Esperamos JSON de respuesta
       },
     });
