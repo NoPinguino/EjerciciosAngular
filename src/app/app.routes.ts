@@ -4,7 +4,7 @@ import { Directivas } from './pages/directivas/directivas';
 import { Comunicacion } from './pages/comunicacion/comunicacion';
 import { Formularios } from './pages/formularios/formularios';
 import { Servicios } from './pages/servicios/servicios';
-import { HttpClient } from './pages/http-client/http-client';
+import { HttpClientComponent } from './pages/http-client/http-client';
 import { DataBinding } from './pages/data-binding/data-binding';
 import { PokemonDetalles } from './pages/pokemon-detalles/pokemon-detalles';
 
@@ -39,7 +39,7 @@ export const routes: Routes = [
   },
   {
     path: 'http-client',
-    component: HttpClient,
+    component: HttpClientComponent,
   },
   {
     path: '**',

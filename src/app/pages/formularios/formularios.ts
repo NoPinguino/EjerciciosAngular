@@ -13,7 +13,7 @@ export class Formularios {
   practicaForm = new FormGroup({
     nombre: new FormControl('', Validators.required),
     apellido1: new FormControl('', Validators.required),
-    apellido2: new FormControl('', Validators.required),
+    apellido2: new FormControl(''),
     email: new FormControl('', [Validators.required, Validators.email]),
     aceptoPolitica: new FormControl(false, Validators.requiredTrue), // true para checkbox
   });

@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+// Importamos el servicio en el que se almacena:
 import { MessageStore } from '../../services/message-store/message-store';
 
 @Component({
@@ -7,5 +8,6 @@ import { MessageStore } from '../../services/message-store/message-store';
   templateUrl: './message-viewer.html',
 })
 export class MessageViewer {
-  constructor(public store: MessageStore) {}
+  store = inject(MessageStore);
+  // En el html accedo al mensaje usando {store.mensaje()} (en un div)
 }
