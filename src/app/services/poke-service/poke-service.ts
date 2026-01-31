@@ -19,24 +19,22 @@ export class PokeService {
   /**
    * Función encargada de hacer la petición a la API de PokeApi.
    * 
-   * @param limit Representa el límite de Pokémon que puede cargar a la vez.
-   * @param offset Representa el número del primer Pokémon de la lista a cargar.
+   * @param cantidad Representa cuantos Pokémon puede cargar a la vez.
+   * @param id Representa el número del primer Pokémon de la lista a cargar.
    * @returns Retorna un servicio observable al que el componente PokeApi se suscribe.
    */
-  getPokemonList(cantidad = 20, inicio = 0): Observable<Pokemon[]> {
-    return this.http.get<any>(
-      `${this.#endpoint}/pokemon?limit=${cantidad}&offset=${inicio}`
-    ).pipe(
-      mergeMap(res =>
-        forkJoin<Pokemon[]>(
-          res.results.map((pkmn: any) => this.getPokemonDetails(pkmn.url))
+  getPokemonList(cantidad = 20, id = 0): Observable<Pokemon[]> {
+    return this.http.get<any>(`${this.#endpoint}/pokemon?limit=${cantidad}&offset=${id}`)
+      .pipe(
+        mergeMap(res =>
+          forkJoin<Pokemon[]>(
+            res.results.map((pkmn: any) => this.getPokemonDetails(pkmn.url))
+          )
         )
-      )
-    );
+      );
   }
 
   /**
-   * 
    * @param url Url con los detalles del Pokémon
    * @returns Objeto Pokémon
    */

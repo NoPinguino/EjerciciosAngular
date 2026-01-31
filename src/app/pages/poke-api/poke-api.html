@@ -11,11 +11,40 @@
     <section class="max-w-full mt-8 p-6 rounded-2xl">
         <h2 class="text-2xl">Lista de Pokémon recibida:</h2>
 
-        <ul>
-            <li *ngFor="let pokemon of pokemonList$ | async">
-                {{ pokemon.name }}
-            </li>
-        </ul>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-6">
+            <div *ngFor="let pokemon of pokemonList$ | async"
+                class="bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-xl p-4 flex flex-col items-center transition-all duration-300 hover:scale-105 hover:-translate-y-1 border-t-4 border-x border-b border-gray-100 dark:border-gray-700 overflow-hidden relative"
+                [style.border-top-color]="getTypeColor(pokemon.types[0])">
+            
+                <!-- Número ID -->
+                <span class="self-end text-xs font-bold text-gray-400 dark:text-gray-500 mb-1">
+                    #{{ pokemon.id.toString().padStart(3, '0') }}
+                </span>
+            
+                <!-- Imagen con fondo degradado sutil y tamaño reducido -->
+                <div
+                    class="w-32 h-32 sm:w-36 sm:h-36 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-xl mb-3 p-2">
+                    <img [src]="pokemon.image" [alt]="pokemon.name" class="w-full h-full object-contain drop-shadow-lg" />
+                </div>
+            
+                <!-- Nombre -->
+                <h3 class="text-sm sm:text-base font-bold text-gray-800 dark:text-gray-100 text-center mb-2 capitalize">
+                    {{ pokemon.name }}
+                </h3>
+            
+                <!-- Tipos -->
+                <div class="flex gap-1 flex-wrap justify-center">
+                    <span *ngFor="let type of pokemon.types" [ngClass]="typeColors[type] || typeColors['default']"
+                        class="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-white text-[10px] sm:text-xs font-semibold uppercase shadow-sm">
+                        {{ type }}
+                    </span>
+                </div>
+            
+                <!-- Efecto decorativo de fondo con el color del tipo -->
+                <div class="absolute -bottom-10 -right-10 w-32 h-32 rounded-full opacity-5"
+                    [ngClass]="typeColors[pokemon.types[0]] || typeColors['default']"></div>
+            </div>
+        </div>
 
         <button class="w-full mt-6 px-6 py-3 cursor-pointer rounded-xl font-bold text-white
                        bg-red-600 hover:bg-red-500 transition-all duration-200 shadow-md" (click)="loadMore()">
