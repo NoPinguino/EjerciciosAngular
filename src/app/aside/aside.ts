@@ -8,7 +8,7 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterModule], // RouterLink y RouterLinkActive ya vienen con RouterModule
   templateUrl: './aside.html',
-  styleUrls: ['./aside.css'], // corregido plural
+  styleUrls: ['./aside.css'],
 })
 export class Aside {
   isOpen = true;

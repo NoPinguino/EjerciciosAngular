@@ -1,24 +1,24 @@
-<div class="max-w-full mx-auto p-6 space-y-8">
+<div class="max-w-full px-2 sm:px-4 md:px-6 py-3 sm:py-6 space-y-6 sm:space-y-8">
   <!-- Título principal -->
-  <h1 class="text-4xl font-extrabold text-center text-gray-800 dark:text-gray-100 mb-8">
+  <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-center text-gray-800 dark:text-gray-100 mb-4 sm:mb-6">
     Comunicación entre componentes
   </h1>
 
-  <section class="space-y-8">
-    <h2 class="text-3xl font-semibold mt-8 mb-4 text-center">Comunicación: @Input y @Output.</h2>
+  <section class="space-y-6 sm:space-y-8">
+    <h2 class="text-xl sm:text-2xl md:text-3xl font-semibold mt-0 mb-3 sm:mb-4 text-center">Comunicación: @Input y @Output.</h2>
     <!-- Selector de estilo -->
-    <div class="flex flex-col items-center space-y-4">
-      <p class="font-semibold text-gray-700 dark:text-gray-300 text-lg text-center">
+    <div class="flex flex-col items-center space-y-3 sm:space-y-4">
+      <p class="font-semibold text-gray-700 dark:text-gray-300 text-sm sm:text-base md:text-lg text-center">
         Selecciona un estilo para el hijo:
       </p>
-      <div class="flex gap-4 flex-wrap justify-center">
+      <div class="flex gap-2 sm:gap-3 md:gap-4 flex-wrap justify-center">
         <!-- Botón Morado -->
         <button
           (click)="colorSeleccionado='purple'"
           [ngClass]="colorSeleccionado === 'purple'
             ? 'bg-purple-800 text-white'
             : 'bg-purple-600 text-white hover:bg-purple-700'"
-          class="w-36 px-6 py-3 cursor-pointer rounded-lg shadow transition"
+          class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 cursor-pointer rounded-lg shadow transition text-sm sm:text-base"
         >
           Morado
         </button>
@@ -29,7 +29,7 @@
           [ngClass]="colorSeleccionado === 'green'
             ? 'bg-green-700 text-white'
             : 'bg-green-500 text-white hover:bg-green-600'"
-          class="w-36 px-6 py-3 cursor-pointer rounded-lg shadow transition"
+          class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 cursor-pointer rounded-lg shadow transition text-sm sm:text-base"
         >
           Verde
         </button>
@@ -40,7 +40,7 @@
           [ngClass]="colorSeleccionado === 'yellow'
             ? 'bg-yellow-600 text-white'
             : 'bg-yellow-400 text-white hover:bg-yellow-500'"
-          class="w-36 px-6 py-3 cursor-pointer rounded-lg shadow transition"
+          class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 cursor-pointer rounded-lg shadow transition text-sm sm:text-base"
         >
           Amarillo
         </button>

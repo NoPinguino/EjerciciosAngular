@@ -1,0 +1,51 @@
+/* App responsive styles */
+
+/* Tablet and up */
+@media (min-width: 768px) {
+  :host {
+    --aside-width: 16rem; /* 64px * 4 = 256px */
+  }
+}
+
+/* Mobile optimizations */
+@media (max-width: 767px) {
+  :host {
+    --aside-width: 100%;
+  }
+
+  /* Ensure sidebar animation works properly */
+  aside {
+    transition: transform 0.3s ease-in-out;
+  }
+
+  main {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+  :host {
+    font-size: 14px;
+  }
+
+  header {
+    height: 56px;
+  }
+
+  main {
+    margin-top: 56px;
+  }
+}
+
+/* Landscape orientation */
+@media (max-height: 600px) and (orientation: landscape) {
+  header {
+    height: 48px;
+  }
+
+  main {
+    padding: 12px;
+  }
+}

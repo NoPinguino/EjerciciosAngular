@@ -8,4 +8,8 @@ import { Component, EventEmitter, Output } from '@angular/core';
 })
 export class Header {
   @Output() toggleSideMenu = new EventEmitter<void>();
+
+  onToggleSideMenu() {
+    this.toggleSideMenu.emit();
+  }
 }

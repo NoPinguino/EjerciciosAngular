@@ -9,25 +9,25 @@
 
   <!-- ================= MOBILE BACKDROP ================= -->
   @if (isSideMenuOpen()) {
-  <div (click)="closeSideMenu()" class="fixed inset-0 z-10 bg-black bg-opacity-50 md:hidden"></div>
+  <div (click)="closeSideMenu()" class="fixed inset-0 z-10 bg-black/50 md:hidden animate-in fade-in duration-200\"></div>
   }
 
   <!-- ================= MOBILE SIDEBAR ================= -->
   @if (isSideMenuOpen()) {
   <aside
-    class="fixed inset-y-0 left-0 z-20 w-64 bg-white dark:bg-gray-800 shadow-md overflow-y-auto md:hidden pt-16"
+    class="fixed inset-y-0 left-0 z-20 w-64 bg-white dark:bg-gray-800 shadow-lg overflow-y-auto md:hidden pt-16 animate-in slide-in-from-left duration-300"
   >
-    <app-aside-m></app-aside-m>
+    <app-aside-m (navClicked)="closeSideMenu()"></app-aside-m>
   </aside>
   }
 
   <!-- ================= MAIN COLUMN ================= -->
   <div class="flex-1 md:ml-64 flex flex-col h-screen">
     <!-- HEADER FIJO -->
-    <app-header class="shrink-0 h-16"></app-header>
+    <app-header class="shrink-0 h-16" (toggleSideMenu)="toggleSideMenu()"></app-header>
 
     <!-- CONTENIDO CON SCROLL -->
-    <main class="flex-1 overflow-y-auto p-6 mt-16 md:mt-0">
+    <main class="flex-1 overflow-y-auto p-6">
       <router-outlet></router-outlet>
     </main>
   </div>

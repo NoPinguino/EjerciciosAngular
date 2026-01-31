@@ -1,26 +1,26 @@
 <div
   *ngIf="pokemon"
-  class="max-w-lg mx-auto my-8 p-8 bg-white dark:bg-gray-900 rounded-3xl shadow-xl border border-gray-200 dark:border-gray-700"
+  class="max-w-xl mx-auto mt-0 mb-4 sm:mb-8 p-3 sm:p-6 md:p-8 bg-white dark:bg-gray-900 rounded-lg sm:rounded-2xl md:rounded-3xl shadow-xl border border-gray-200 dark:border-gray-700"
 >
-  <div class="flex flex-col items-center space-y-6">
+  <div class="flex flex-col items-center space-y-4 sm:space-y-6">
     <!-- Imagen con fondo circular -->
     <div
-      class="w-36 h-36 rounded-full overflow-hidden shadow-md border-4 border-purple-200 dark:border-purple-700"
+      class="w-24 sm:w-32 md:w-36 h-24 sm:h-32 md:h-36 rounded-full overflow-hidden shadow-md border-4 border-purple-200 dark:border-purple-700"
     >
       <img [src]="pokemon.imagen" [alt]="pokemon.nombre" class="w-full h-full object-cover" />
     </div>
 
     <!-- Nombre -->
-    <h1 class="text-4xl font-extrabold text-gray-900 dark:text-gray-100">{{ pokemon.nombre }}</h1>
+    <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-gray-100 text-center">{{ pokemon.nombre }}</h1>
 
     <!-- Descripción -->
-    <p class="text-center text-gray-600 dark:text-gray-300 px-4">{{ pokemon.descripcion }}</p>
+    <p class="text-center text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-300 px-2 sm:px-4 leading-relaxed">{{ pokemon.descripcion }}</p>
 
     <!-- Tipos con gradiente -->
-    <div class="flex gap-2">
+    <div class="flex gap-2 flex-wrap justify-center">
       <span
         *ngFor="let tipo of pokemon.tipos"
-        class="px-4 py-1 rounded-full text-sm font-semibold text-white"
+        class="px-2 sm:px-4 py-1 rounded-full text-xs sm:text-sm font-semibold text-white"
         [ngClass]="tipoColores[tipo]"
       >
         {{ tipo }}

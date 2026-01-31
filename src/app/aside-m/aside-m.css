@@ -1,0 +1,62 @@
+/* Aside mobile responsive styles */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+@media (max-width: 768px) {
+  /* Optimizar para pantallas pequeñas */
+  nav ul {
+    padding: 8px;
+  }
+
+  a {
+    padding: 12px 16px;
+    font-size: 16px;
+    gap: 12px;
+  }
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* Asegurar que el header sea visible */
+  h2 {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  a {
+    padding: 10px 12px;
+    font-size: 15px;
+  }
+
+  svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  button {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+}
+
+/* Animaciones suaves */
+a,
+button {
+  transition: all 0.2s ease-in-out;
+}
+
+a:active {
+  transform: scale(0.98);
+}
+
+button:active {
+  transform: scale(0.95);
+}
+

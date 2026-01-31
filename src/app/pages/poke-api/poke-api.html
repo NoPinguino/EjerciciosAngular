@@ -1,0 +1,25 @@
+<div class="max-w-full px-2 sm:px-4 md:px-6 py-3 sm:py-6">
+    <h1
+        class="text-4xl sm:text-3xl lg:text-4xl font-extrabold text-center text-gray-800 dark:text-gray-100 mb-4 sm:mb-6">
+        Poke-Api.
+    </h1>
+    <p class="text-center text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400">
+        Página de prueba que imprime la Pokédex. En esta página pueden encontrar implementaciones de directivas,
+        observables, servicios, etc.
+    </p>
+
+    <section class="max-w-full mt-8 p-6 rounded-2xl">
+        <h2 class="text-2xl">Lista de Pokémon recibida:</h2>
+
+        <ul>
+            <li *ngFor="let pokemon of pokemonList$ | async">
+                {{ pokemon.name }}
+            </li>
+        </ul>
+
+        <button class="w-full mt-6 px-6 py-3 cursor-pointer rounded-xl font-bold text-white
+                       bg-red-600 hover:bg-red-500 transition-all duration-200 shadow-md" (click)="loadMore()">
+            Cargar más Pokémon
+        </button>
+    </section>
+</div>

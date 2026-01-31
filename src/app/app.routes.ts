@@ -3,10 +3,10 @@ import { Inicio } from './pages/inicio/inicio';
 import { Directivas } from './pages/directivas/directivas';
 import { Comunicacion } from './pages/comunicacion/comunicacion';
 import { Formularios } from './pages/formularios/formularios';
-import { Servicios } from './pages/servicios/servicios';
 import { HttpClientComponent } from './pages/http-client/http-client';
 import { DataBinding } from './pages/data-binding/data-binding';
 import { PokemonDetalles } from './pages/pokemon-detalles/pokemon-detalles';
+import { PokeApi } from './pages/poke-api/poke-api';
 
 export const routes: Routes = [
   {
@@ -34,12 +34,12 @@ export const routes: Routes = [
     component: Formularios,
   },
   {
-    path: 'servicios',
-    component: Servicios,
-  },
-  {
     path: 'http-client',
     component: HttpClientComponent,
+  },
+  {
+    path: 'poke-api',
+    component: PokeApi,
   },
   {
     path: '**',

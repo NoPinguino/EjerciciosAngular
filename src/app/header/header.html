@@ -1,12 +1,12 @@
 <header
   class="fixed top-0 left-0 right-0 z-30 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm shadow-lg border-b border-gray-200 dark:border-gray-700"
 >
-  <div class="max-w-7xl mx-auto px-4 py-3">
-    <div class="flex items-center justify-between gap-4">
+  <div class="max-w-7xl mx-auto px-2 sm:px-4 py-2 sm:py-3">
+    <div class="flex items-center justify-between gap-2 sm:gap-4">
       <!-- Logo -->
-      <a class="flex items-center text-lg font-bold text-gray-800 dark:text-gray-200" href="#">
+      <a class="flex items-center text-lg font-bold text-gray-800 dark:text-gray-200 flex-shrink-0" href="#">
         <img
-          class="h-8 w-auto"
+          class="h-7 sm:h-8 w-auto"
           src="https://colegiolitterator.com/wp-content/uploads/2023/12/ColegioLitterator.svg"
           alt="Colegio Litterator"
         />
@@ -36,13 +36,13 @@
       </div>
 
       <!-- Right side icons -->
-      <div class="flex items-center space-x-2">
-        <!-- Notifications -->
+      <div class="flex items-center gap-1 sm:gap-2">
+        <!-- Notifications (hidden on small screens) -->
         <button
-          class="relative p-2 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-purple-600 dark:hover:text-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-200"
+          class="relative p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-purple-600 dark:hover:text-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-200 hidden sm:block"
           aria-label="Notificaciones"
         >
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -51,24 +51,24 @@
             />
           </svg>
           <span
-            class="absolute top-1.5 right-1.5 inline-flex h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-white dark:border-gray-800"
+            class="absolute top-1 right-1 inline-flex h-2 w-2 rounded-full bg-red-500 border-2 border-white dark:border-gray-800"
           ></span>
         </button>
 
-        <!-- Profile -->
-        <div class="relative">
+        <!-- Profile (hidden on small screens) -->
+        <div class="relative hidden sm:block">
           <button
             class="flex items-center rounded-xl p-1 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none transition-all duration-200"
             aria-label="Perfil"
           >
             <div class="relative">
               <img
-                class="w-9 h-9 rounded-full object-cover ring-2 ring-purple-500 dark:ring-purple-400"
+                class="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-cover ring-2 ring-purple-500 dark:ring-purple-400"
                 src="https://i.pinimg.com/1200x/73/46/7e/73467ec4721556c9bd59322134f00148.jpg"
                 alt="Penguin"
               />
               <span
-                class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"
+                class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"
               ></span>
             </div>
           </button>
@@ -76,9 +76,9 @@
 
         <!-- Mobile hamburger -->
         <button
-          class="md:hidden p-2 rounded-xl text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-200"
+          class="md:hidden p-2 rounded-lg text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-200 active:scale-95"
           aria-label="Menu"
-          (click)="toggleSideMenu.emit()"
+          (click)="onToggleSideMenu()"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path

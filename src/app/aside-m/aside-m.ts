@@ -1,33 +1,24 @@
-import { Component, ElementRef, HostListener } from '@angular/core';
-import { Router } from '@angular/router';
-import { RouterLink } from '@angular/router';
+import { Component, Output, EventEmitter } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'app-aside-m',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, RouterLinkActive],
   templateUrl: './aside-m.html',
   styleUrl: './aside-m.css',
 })
 export class AsideM {
-
-  constructor(private el: ElementRef, private router: Router) { }
-
-  isOpen = true;
-
-  @HostListener('document:click', ['$event'])
-  onClick(event: MouseEvent) {
-    if (!this.el.nativeElement.contains(event.target)) {
-      this.closeSideMenu();
-    }
-  }
-
-  closeSideMenu() {
-    this.isOpen = false;
-  }
+  @Output() navClicked = new EventEmitter<void>();
+  
+  isPagesMenuOpen = false;
 
   togglePagesMenu() {
+    this.isPagesMenuOpen = !this.isPagesMenuOpen;
+  }
 
+  onNavClick() {
+    this.navClicked.emit();
   }
 }
 

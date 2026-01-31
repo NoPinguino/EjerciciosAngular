@@ -1,23 +1,23 @@
-<div class="max-w-full mx-6 p-6">
-  <h1 class="text-4xl font-extrabold my-6 text-center">Ejemplos de Data Binding en Angular</h1>
+<div class="max-w-full px-2 sm:px-4 md:px-6 py-3 sm:py-6">
+  <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold mb-4 sm:mb-6 text-center">Ejemplos de Data Binding en Angular</h1>
 
   <!-- GRID RESPONSIVE -->
-  <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+  <div class="mt-4 sm:mt-6 grid grid-cols-1 gap-3 sm:gap-4 md:gap-6 lg:grid-cols-2">
     <!-- ================= INTERPOLATION ================= -->
-    <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col gap-4">
-      <h2 class="text-xl font-semibold text-blue-600">Interpolación</h2>
-      <p class="text-gray-600">Mostrar datos del componente en la vista</p>
+    <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl md:rounded-2xl shadow-md p-3 sm:p-4 md:p-6 flex flex-col gap-2 sm:gap-3 md:gap-4">
+      <h2 class="text-lg sm:text-xl font-semibold text-blue-600 dark:text-blue-400">Interpolación</h2>
+      <p class="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400">Mostrar datos del componente en la vista</p>
 
-      <p class="bg-blue-50 text-blue-700 p-3 rounded-lg">Hola, {{ nombre }}</p>
+      <p class="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 p-2 sm:p-3 rounded-lg text-sm sm:text-base">Hola, {{ nombre }}</p>
     </div>
 
     <!-- ================= PROPERTY BINDING ================= -->
-    <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col gap-4">
-      <h2 class="text-xl font-semibold text-green-600">Property Binding</h2>
-      <p class="text-gray-600">Enlazar propiedades del DOM</p>
+    <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl md:rounded-2xl shadow-md p-3 sm:p-4 md:p-6 flex flex-col gap-2 sm:gap-3 md:gap-4">
+      <h2 class="text-lg sm:text-xl font-semibold text-green-600 dark:text-green-400">Property Binding</h2>
+      <p class="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400">Enlazar propiedades del DOM</p>
 
       <button
-        class="cursor-pointer py-2 rounded-lg text-white transition"
+        class="cursor-pointer py-2 px-3 sm:px-4 rounded-lg text-sm sm:text-base text-white transition"
         (click)="mostrarAlert()"
         [disabled]="deshabilitado"
         [class.bg-green-500]="!deshabilitado"
@@ -27,7 +27,7 @@
       </button>
 
       <button
-        class="cursor-pointer text-sm underline text-green-600"
+        class="cursor-pointer text-xs sm:text-sm underline text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300"
         (click)="deshabilitado = !deshabilitado"
       >
         Activar / Desactivar
@@ -35,18 +35,18 @@
     </div>
 
     <!-- ================= TWO-WAY BINDING ================= -->
-    <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col gap-4">
-      <h2 class="text-xl font-semibold text-purple-600">Two-way Binding</h2>
-      <p class="text-gray-600">Comunicación bidireccional vista ↔ componente</p>
+    <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl md:rounded-2xl shadow-md p-3 sm:p-4 md:p-6 flex flex-col gap-2 sm:gap-3 md:gap-4">
+      <h2 class="text-lg sm:text-xl font-semibold text-purple-600 dark:text-purple-400">Two-way Binding</h2>
+      <p class="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400">Comunicación bidireccional vista ↔ componente</p>
 
       <input
         type="text"
         [(ngModel)]="mensaje"
         placeholder="Escribe algo..."
-        class="border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+        class="border rounded-lg p-2 sm:p-3 text-sm sm:text-base dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-400"
       />
 
-      <p class="bg-purple-50 text-purple-700 p-3 rounded-lg">Escribiste: {{ mensaje }}</p>
+      <p class="bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 p-2 sm:p-3 rounded-lg text-sm sm:text-base">Escribiste: {{ mensaje }}</p>
     </div>
 
     <!-- ================= EVENT BINDING ================= -->
