@@ -43,3 +43,5 @@ mergeMap se encarga de coger el valor recibido por la primera petición (que deb
 forkJoin se encarga de realizar en simultaneo 20 peticiones http.get() llamando a la función de obtener detalles, y espera a que todos los observables emitan el tado recibido. Con esa lista crea finalmente un array completo de objetos Pokemon[]
 
 ### getPokemonDetails()
+
+Esta función toma la url de el objeto any y hace una petición http, emittiendo los datos recividos.
