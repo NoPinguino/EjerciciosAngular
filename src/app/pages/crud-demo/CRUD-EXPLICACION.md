@@ -720,7 +720,7 @@ this.reviews.set([...this.reviews(), newReview]);
 
 ## ✅ Checklist de Implementación
 
-- [ ] Google Sheet creado con columnas correctas
+- [v] Google Sheet creado con columnas correctas
 - [ ] Apps Script publicado como Web App
 - [ ] Acceso configurado como "Cualquiera"
 - [ ] URL del script copiada en reviews.service.ts
