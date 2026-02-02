@@ -7,6 +7,7 @@ import { HttpClientComponent } from './pages/http-client/http-client';
 import { DataBinding } from './pages/data-binding/data-binding';
 import { PokemonDetalles } from './pages/pokemon-detalles/pokemon-detalles';
 import { PokeApi } from './pages/poke-api/poke-api';
+import { CrudDemo } from './pages/crud-demo/crud-demo';
 
 export const routes: Routes = [
   {
@@ -40,6 +41,10 @@ export const routes: Routes = [
   {
     path: 'poke-api',
     component: PokeApi,
+  },
+  {
+    path: 'crud-demo',
+    component: CrudDemo,
   },
   {
     path: '**',
