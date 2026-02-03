@@ -1,52 +1,57 @@
-<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4">
-  <div class="max-w-full mx-auto">
-    <!-- HEADER -->
-    <div class="mb-12">
-      <h1 class="text-3xl md:text-4xl text-center font-bold text-gray-900 dark:text-white mb-2">
-        Reseñas de Películas
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+  <div class="max-w-full mx-auto py-12 px-4">
+    <!-- HEADER CINEMATOGRÁFICO -->
+    <div class="mb-16 text-center">
+      <div class="inline-block mb-4">
+        <span class="text-yellow-500 text-5xl">🎬</span>
+      </div>
+      <h1 class="text-5xl md:text-6xl font-black text-gray-900 dark:text-white mb-3 tracking-wider">
+        CineReview.
       </h1>
-      <p class="text-center text-base text-gray-600 dark:text-gray-400">
+      <div class="h-1 w-24 bg-gradient-to-r from-yellow-500 to-red-600 mx-auto mb-4"></div>
+      <p class="text-xl text-gray-600 dark:text-gray-300">
         Comparte tu opinión sobre tus películas favoritas
       </p>
     </div>
 
     <!-- ERROR MESSAGE -->
-    <div *ngIf="error()" class="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 rounded-xl">
-      <p class="text-red-700 dark:text-red-300 text-sm">{{ error() }}</p>
+    <div *ngIf="error()" class="mb-8 bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-500 p-4 rounded-lg backdrop-blur">
+      <p class="text-red-900 dark:text-red-200 text-sm">{{ error() }}</p>
     </div>
 
     <!-- FORMULARIO -->
-    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 mb-10 border border-gray-200 dark:border-gray-700">
-      <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+    <div #formulario class="bg-white dark:bg-gray-800/50 backdrop-blur border border-gray-200 dark:border-gray-700 rounded-xl p-8 mb-16 shadow-lg dark:shadow-2xl">
+      <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-8 flex items-center gap-3">
+        <span>{{ editingId() ? '✏️' : '🎥' }}</span>
         {{ editingId() ? 'Editar Reseña' : 'Nueva Reseña' }}
       </h2>
       
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <!-- TÍTULO -->
           <div class="md:col-span-2">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Título
+            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+              Título de la película
             </label>
             <input
               type="text"
               formControlName="title"
-              class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-4 py-2.5 text-gray-900 dark:text-gray-100 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors"
+              class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-yellow-500 dark:focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/30 transition-all"
               placeholder="Ej: Blade Runner 2049"
             />
-            <p class="text-xs text-red-600 dark:text-red-400 mt-1.5" *ngIf="form.get('title')?.touched && form.get('title')?.invalid">
+            <p class="text-xs text-red-600 dark:text-red-400 mt-2" *ngIf="form.get('title')?.touched && form.get('title')?.invalid">
               El título es obligatorio (máx. 30 caracteres)
             </p>
           </div>
 
           <!-- PUNTUACIÓN -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Puntuación
+            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+              Tu puntuación
             </label>
             <select
               formControlName="rating"
-              class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-4 py-2.5 text-gray-900 dark:text-gray-100 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors"
+              class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-3 text-gray-900 dark:text-white focus:border-yellow-500 dark:focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/30 transition-all"
             >
               <option value="1">⭐ 1/5</option>
               <option value="2">⭐⭐ 2/5</option>
@@ -59,29 +64,59 @@
 
         <!-- RESEÑA -->
         <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Reseña
+          <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+            Tu opinión
           </label>
           <textarea
-            rows="3"
+            rows="4"
             formControlName="review"
-            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-4 py-2.5 text-gray-900 dark:text-gray-100 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors resize-none"
-            placeholder="Comparte tu opinión..."
+            class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-yellow-500 dark:focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/30 transition-all resize-none"
+            placeholder="Comparte tu opinión sobre la película..."
           ></textarea>
-          <p class="text-xs text-red-600 dark:text-red-400 mt-1.5" *ngIf="form.get('review')?.touched && form.get('review')?.invalid">
+          <p class="text-xs text-red-600 dark:text-red-400 mt-2" *ngIf="form.get('review')?.touched && form.get('review')?.invalid">
             La reseña es obligatoria (máx. 240 caracteres)
           </p>
         </div>
 
+        <!-- IMAGEN (POSTER) -->
+        <div class="mb-8">
+          <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+            Poster de la película (opcional)
+          </label>
+          <div class="flex gap-3 mb-4">
+            <input
+              type="file"
+              accept="image/*"
+              (change)="onImageSelected($event)"
+              class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-3 text-gray-600 dark:text-gray-300 text-sm focus:border-yellow-500 dark:focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/30 transition-all cursor-pointer file:cursor-pointer file:mr-3 file:py-2 file:px-3 file:rounded file:border-0 file:bg-yellow-600 file:text-white hover:file:bg-yellow-700"
+              placeholder="Selecciona una imagen"
+            />
+            <button
+              *ngIf="selectedImage()"
+              type="button"
+              (click)="selectedImage.set(null); $event.preventDefault()"
+              class="px-6 py-3 rounded-lg font-semibold text-gray-900 dark:text-gray-900 bg-gray-400 dark:bg-gray-400 hover:bg-gray-300 dark:hover:bg-gray-300 transition-colors"
+            >
+              Limpiar
+            </button>
+          </div>
+          <p class="text-xs text-gray-600 dark:text-gray-400 mb-4">
+            Máx. 5MB • Formatos: JPG, PNG, GIF, WebP
+          </p>
+          <div *ngIf="selectedImage()" class="rounded-lg overflow-hidden border-2 border-yellow-500 w-40 shadow-lg">
+            <img [src]="selectedImage()" alt="Preview" class="w-full h-56 object-cover">
+          </div>
+        </div>
+
         <!-- BOTONES -->
-        <div class="flex gap-3">
+        <div class="flex gap-4">
           <button
             type="submit"
             [disabled]="submitting() || form.invalid"
-            class="flex-1 px-6 py-2.5 rounded-lg font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 transition-colors disabled:cursor-not-allowed"
+            class="flex-1 px-6 py-3 rounded-lg font-bold text-gray-900 bg-gradient-to-r from-yellow-500 to-red-600 hover:from-yellow-600 hover:to-red-700 disabled:from-gray-400 disabled:to-gray-500 transition-all disabled:cursor-not-allowed uppercase tracking-wider"
           >
-            <span *ngIf="!submitting() && !editingId()">Publicar</span>
-            <span *ngIf="!submitting() && editingId()">Guardar</span>
+            <span *ngIf="!submitting() && !editingId()">Publicar Reseña</span>
+            <span *ngIf="!submitting() && editingId()">Guardar Cambios</span>
             <span *ngIf="submitting()">Guardando...</span>
           </button>
           
@@ -89,7 +124,7 @@
             type="button"
             *ngIf="editingId()"
             (click)="cancelEdit()"
-            class="px-6 py-2.5 rounded-lg font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            class="px-6 py-3 rounded-lg font-bold text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
           >
             Cancelar
           </button>
@@ -98,86 +133,104 @@
     </div>
 
     <!-- LOADING STATE -->
-    <div *ngIf="loading()" class="text-center py-16">
-      <div class="inline-block animate-spin rounded-full h-10 w-10 border-2 border-gray-300 dark:border-gray-700 border-t-blue-600"></div>
-      <p class="text-gray-500 dark:text-gray-400 mt-3 text-sm">Cargando...</p>
+    <div *ngIf="loading()" class="text-center py-20">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 dark:border-gray-700 border-t-yellow-500 mb-4"></div>
+      <p class="text-gray-600 dark:text-gray-400 text-lg">Cargando películas...</p>
     </div>
 
     <!-- LISTADO DE RESEÑAS -->
     <div *ngIf="!loading()">
-      <div class="flex items-center justify-between mb-6">
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
-          Reseñas ({{ reviews().length }})
+      <div class="mb-8">
+        <h2 class="text-3xl font-black text-gray-900 dark:text-white flex items-center gap-3">
+          <span>🎞️</span>
+          Reseñas Recientes
+          <span class="text-xl text-gray-600 dark:text-gray-400 font-normal">({{ reviews().length }})</span>
         </h2>
+        <div class="h-1 w-16 bg-gradient-to-r from-yellow-500 to-red-600 mt-4"></div>
       </div>
       
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- CARD DE REVIEW -->
         <div 
           *ngFor="let review of reviews()" 
-          class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
+          class="group relative bg-white dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-300 dark:border-gray-700 hover:border-yellow-500 dark:hover:border-yellow-500 transition-all duration-300 hover:shadow-lg dark:hover:shadow-lg hover:shadow-yellow-500/20 flex flex-col sm:flex-row h-full"
         >
-          <div class="flex items-start justify-between mb-3">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex-1 pr-2">
-              {{ review.title }}
-            </h3>
-            <div class="flex gap-1">
-              <button
-                type="button"
-                (click)="onEdit(review); $event.stopPropagation()"
-                class="text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-sm"
-                title="Editar"
-              >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-              </button>
-              <button
-                type="button"
-                (click)="onDelete(review.id, review.title); $event.stopPropagation()"
-                class="text-gray-400 hover:text-red-600 dark:hover:text-red-400 rounded-lg p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-sm"
-                title="Eliminar"
-              >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-              </button>
-            </div>
+          <!-- POSTER - IZQUIERDA -->
+          <div *ngIf="review.image; else noPoster" class="relative w-full sm:w-2/5 h-64 overflow-hidden bg-gray-200 dark:bg-gray-900 flex-shrink-0">
+            <img [src]="review.image" alt="{{ review.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-20"></div>
           </div>
-          
-          <div class="flex items-center gap-2 mb-3">
-            <div class="text-yellow-500 text-base">
-              {{ '⭐'.repeat(+review.rating) }}
+          <ng-template #noPoster>
+            <div class="w-full sm:w-2/5 h-64 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-900 flex items-center justify-center flex-shrink-0">
+              <span class="text-3xl">🎬</span>
             </div>
-            <span class="text-xs text-gray-500 dark:text-gray-400">
-              {{ review.rating }}/5
-            </span>
-          </div>
-          
-          <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-4">
-            {{ review.review }}
-          </p>
-          
-          <div class="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 pt-3 border-t border-gray-100 dark:border-gray-700">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <span>{{ review.date | date:'short' }}</span>
+          </ng-template>
+
+          <!-- CONTENIDO - DERECHA -->
+          <div class="p-3 relative flex-1 flex flex-col justify-between">
+            <!-- TÍTULO -->
+            <div>
+              <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1 line-clamp-2 group-hover:text-yellow-600 dark:group-hover:text-yellow-400 transition-colors leading-tight">
+                {{ review.title }}
+              </h3>
+
+              <!-- PUNTUACIÓN CON ESTRELLAS -->
+              <div class="flex items-center gap-0.5 mb-1">
+                <div class="text-yellow-500 text-sm">
+                  {{ '⭐'.repeat(+review.rating) }}
+                </div>
+              </div>
+
+              <!-- RESEÑA -->
+              <p class="text-sm text-gray-700 dark:text-gray-300 leading-tight">
+                {{ review.review }}
+              </p>
+            </div>
+
+            <!-- FECHA Y BOTONES COMPACTOS -->
+            <div class="flex flex-col gap-1 mt-2 pt-2 border-t border-gray-300 dark:border-gray-700/50">
+              <!-- FECHA -->
+              <div class="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-500">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span class="mt-0.5">{{ review.date | date:'short' }}</span>
+              </div>
+
+              <!-- BOTONES DE ACCIÓN -->
+              <div class="flex gap-1.5">
+                <button
+                  type="button"
+                  (click)="onEdit(review); $event.stopPropagation()"
+                  class="flex-1 px-2 py-1 rounded text-xs font-semibold text-yellow-700 dark:text-yellow-300 bg-yellow-100 dark:bg-yellow-500/20 hover:bg-yellow-200 dark:hover:bg-yellow-500/40 border border-yellow-300 dark:border-yellow-500/50 transition-colors hover:shadow-sm"
+                  title="Editar"
+                >
+                  ✏️
+                </button>
+                <button
+                  type="button"
+                  (click)="onDelete(review.id, review.title); $event.stopPropagation()"
+                  class="flex-1 px-2 py-1 rounded text-xs font-semibold text-red-700 dark:text-red-300 bg-red-100 dark:bg-red-500/20 hover:bg-red-200 dark:hover:bg-red-500/40 border border-red-300 dark:border-red-500/50 transition-colors hover:shadow-sm"
+                  title="Eliminar"
+                >
+                  🗑️
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
         <!-- EMPTY STATE -->
         <div 
           *ngIf="reviews().length === 0" 
-          class="col-span-full text-center py-20 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-dashed border-gray-300 dark:border-gray-700"
+          class="col-span-full py-24 bg-gray-100 dark:bg-gray-800/30 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 text-center"
         >
-          <svg class="w-16 h-16 mx-auto mb-4 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
-          </svg>
-          <p class="text-lg font-medium text-gray-900 dark:text-white mb-1">
-            No hay reseñas
+          <div class="text-6xl mb-4">🎭</div>
+          <p class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            Sin reseñas todavía
           </p>
-          <p class="text-sm text-gray-500 dark:text-gray-400">
-            Sé el primero en compartir tu opinión
+          <p class="text-gray-600 dark:text-gray-400">
+            Sé el primero en compartir tu opinión sobre una película
           </p>
         </div>
       </div>

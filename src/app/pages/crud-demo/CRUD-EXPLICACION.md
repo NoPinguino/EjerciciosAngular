@@ -3,12 +3,12 @@
 ## 📋 Índice
 1. [Introducción](#introducción)
 2. [Arquitectura del Proyecto](#arquitectura-del-proyecto)
-3. [Google Apps Script (Backend)](#google-apps-script-backend)
-4. [Servicio Angular (reviews.service.ts)](#servicio-angular)
-5. [Componente (crud-demo.ts)](#componente)
-6. [Plantilla HTML (crud-demo.html)](#plantilla-html)
-7. [Flujo de Datos](#flujo-de-datos)
-8. [Conceptos Clave](#conceptos-clave)
+3. [Cloudflare Worker (Proxy CORS)](#cloudflare-worker-proxy-cors)
+4. [Google Apps Script (Backend)](#google-apps-script-backend)
+5. [Servicio Angular (reviews.service.ts)](#servicio-angular)
+6. [Componente (crud-demo.ts)](#componente)
+7. [Conceptos Clave de Angular](#conceptos-clave-de-angular)
+8. [Flujo de Datos Completo](#flujo-de-datos-completo)
 9. [Problemas Comunes y Soluciones](#problemas-comunes-y-soluciones)
 
 ---
@@ -16,9 +16,10 @@
 ## 🎯 Introducción
 
 Este proyecto es un **CRUD completo** (Create, Read, Update, Delete) de reseñas de películas que utiliza:
-- **Frontend**: Angular 18 con Standalone Components
+- **Frontend**: Angular 18+ con Standalone Components
+- **Proxy CORS**: Cloudflare Worker
 - **Backend**: Google Apps Script conectado a Google Sheets
-- **Comunicación**: HTTP GET con parámetros (evitando problemas de CORS)
+- **Comunicación**: Métodos HTTP REST estándar (GET, POST, PUT, DELETE)
 
 ---
 
@@ -29,7 +30,13 @@ Este proyecto es un **CRUD completo** (Create, Read, Update, Delete) de reseñas
 │   Angular App   │
 │  (Frontend)     │
 └────────┬────────┘
-         │ HTTP GET
+         │ HTTP: GET/POST/PUT/DELETE
+         ▼
+┌─────────────────┐
+│ Cloudflare      │
+│ Worker (Proxy)  │
+└────────┬────────┘
+         │ Reenvía peticiones
          ▼
 ┌─────────────────┐
 │ Google Apps     │
@@ -45,9 +52,88 @@ Este proyecto es un **CRUD completo** (Create, Read, Update, Delete) de reseñas
 
 ### ¿Por qué esta arquitectura?
 
-1. **Google Sheets como BD**: Fácil de usar, visual, sin configuración
+1. **Google Sheets como BD**: Fácil de usar, visual, sin configuración, gratuita
 2. **Apps Script**: Servidor gratuito, 24/7, sin infraestructura
-3. **Solo GET**: Google Apps Script tiene problemas de CORS con POST/PUT/DELETE desde navegadores
+3. **Cloudflare Worker**: Resuelve problemas de CORS y permite usar métodos HTTP REST estándar
+4. **Métodos REST**: GET para leer, POST para crear, PUT para actualizar, DELETE para eliminar
+
+---
+
+## 🌐 Cloudflare Worker (Proxy CORS)
+
+### ¿Qué es y por qué lo necesitamos?
+
+**Problema**: Google Apps Script tiene restricciones CORS al recibir peticiones POST/PUT/DELETE desde navegadores.
+
+**Solución**: Un Cloudflare Worker actúa como **proxy intermedio** que:
+1. Recibe peticiones del frontend Angular (con cualquier método HTTP)
+2. Reenvía la petición a Google Apps Script
+3. Añade los headers CORS necesarios a la respuesta
+
+### Código del Worker
+
+```javascript
+export default {
+  async fetch(request) {
+    const corsHeaders = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    };
+
+    // Manejo de preflight request
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        status: 204,
+        headers: corsHeaders,
+      });
+    }
+
+    const APPS_SCRIPT_URL =
+      'https://script.google.com/macros/s/AKfycby.../exec';
+
+    // Reenvía la petición a Google Apps Script
+    const newRequest = new Request(APPS_SCRIPT_URL, {
+      method: request.method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: request.method !== 'GET' ? await request.text() : null,
+    });
+
+    const response = await fetch(newRequest);
+
+    return new Response(await response.text(), {
+      status: response.status,
+      headers: corsHeaders,
+    });
+  },
+};
+```
+
+### Conceptos Importantes:
+
+#### 1. **CORS (Cross-Origin Resource Sharing)**
+- El navegador bloquea peticiones entre dominios diferentes por seguridad
+- Los headers CORS permiten que el servidor autorice el acceso:
+  - `Access-Control-Allow-Origin: *` → Permite cualquier origen
+  - `Access-Control-Allow-Methods` → Métodos HTTP permitidos
+  - `Access-Control-Allow-Headers` → Headers permitidos
+
+#### 2. **Preflight Request (OPTIONS)**
+- Antes de POST/PUT/DELETE, el navegador hace una petición OPTIONS
+- Es una "pregunta" al servidor: "¿Puedo hacer esta petición?"
+- Si el servidor responde con los headers CORS correctos, el navegador continúa
+
+#### 3. **Request Proxying**
+```javascript
+const newRequest = new Request(APPS_SCRIPT_URL, {
+  method: request.method,  // Mantiene GET/POST/PUT/DELETE
+  body: request.method !== 'GET' ? await request.text() : null,
+});
+```
+- Lee el body de la petición original
+- Lo reenvía a Apps Script manteniendo el método HTTP
 
 ---
 
@@ -61,88 +147,170 @@ La hoja debe llamarse **"CineReviewAppScript"** y tener estas columnas:
 |----|-------|--------|--------|------|
 | 1738... | Inception | Excelente película | 5 | 2026-02-02... |
 
-### Código del Script
+### Código del Script (Actualizado para REST)
 
 ```javascript
 const SHEET_NAME = "CineReviewAppScript";
 
+/**
+ * GET - Listar todas las reseñas o buscar una específica
+ */
 function doGet(e) {
   try {
     const sheet = getSheet();
-    if (!sheet) {
-      return jsonOutput({ error: "Hoja no encontrada" });
-    }
+    if (!sheet) return jsonOutput({ error: "Hoja no encontrada" });
 
-    const action = e.parameter.action;
-    
-    // CREATE
-    if (action === 'create') {
-      const id = Date.now().toString();
-      const date = new Date().toISOString();
-      sheet.appendRow([
-        id,
-        e.parameter.title || "",
-        e.parameter.review || "",
-        Number(e.parameter.rating) || 0,
-        date
-      ]);
-      return jsonOutput({ ok: true, id: id });
-    }
-
-    // UPDATE
-    if (action === 'update') {
-      const id = String(e.parameter.id || "").trim();
-      const rows = sheet.getDataRange().getValues();
-      for (let i = 1; i < rows.length; i++) {
-        if (String(rows[i][0]).trim() === id) {
-          sheet.getRange(i + 1, 2).setValue(e.parameter.title);
-          sheet.getRange(i + 1, 3).setValue(e.parameter.review);
-          sheet.getRange(i + 1, 4).setValue(Number(e.parameter.rating));
-          return jsonOutput({ ok: true });
-        }
-      }
-      return jsonOutput({ ok: false, error: "No encontrado" });
-    }
-
-    // DELETE
-    if (action === 'delete') {
-      const id = String(e.parameter.id || "").trim();
-      const rows = sheet.getDataRange().getValues();
-      for (let i = 1; i < rows.length; i++) {
-        if (String(rows[i][0]).trim() === id) {
-          sheet.deleteRow(i + 1);
-          return jsonOutput({ ok: true });
-        }
-      }
-      return jsonOutput({ ok: false, error: "No encontrado" });
-    }
-
-    // READ ALL
     const data = getAllRows(sheet);
+
+    if (e.parameter.id) {
+      const id = String(e.parameter.id).trim();
+      const item = data.find(r => String(r.id).trim() === id);
+      return jsonOutput(item || { error: "No encontrado" });
+    }
+
     return jsonOutput(data);
-    
+
   } catch (err) {
     return jsonOutput({ error: err.message });
   }
+}
+
+/**
+ * POST - Crear una nueva reseña
+ * Body JSON: { title, review, rating }
+ */
+function doPost(e) {
+  try {
+    const sheet = getSheet();
+    if (!sheet) return jsonOutput({ error: "Hoja no encontrada" });
+
+    const body = JSON.parse(e.postData.contents);
+    const id = Date.now().toString();
+    const date = new Date().toISOString();
+
+    sheet.appendRow([
+      id,
+      body.title || "",
+      body.review || "",
+      Number(body.rating) || 0,
+      date
+    ]);
+
+    return jsonOutput({ ok: true, id });
+
+  } catch (err) {
+    return jsonOutput({ error: err.message });
+  }
+}
+
+/**
+ * PUT - Actualizar reseña existente
+ * Body JSON: { id, title, review, rating }
+ */
+function doPut(e) {
+  try {
+    const sheet = getSheet();
+    if (!sheet) return jsonOutput({ error: "Hoja no encontrada" });
+
+    const body = JSON.parse(e.postData.contents);
+    const rows = sheet.getDataRange().getValues();
+
+    for (let i = 1; i < rows.length; i++) {
+      if (String(rows[i][0]).trim() === String(body.id).trim()) {
+        sheet.getRange(i + 1, 2).setValue(body.title || "");
+        sheet.getRange(i + 1, 3).setValue(body.review || "");
+        sheet.getRange(i + 1, 4).setValue(Number(body.rating) || 0);
+        return jsonOutput({ ok: true });
+      }
+    }
+
+    return jsonOutput({ ok: false, error: "Reseña no encontrada" });
+
+  } catch (err) {
+    return jsonOutput({ error: err.message });
+  }
+}
+
+/**
+ * DELETE - Eliminar reseña existente
+ * Body JSON: { id }
+ */
+function doDelete(e) {
+  try {
+    const sheet = getSheet();
+    if (!sheet) return jsonOutput({ error: "Hoja no encontrada" });
+
+    const body = JSON.parse(e.postData.contents);
+    const rows = sheet.getDataRange().getValues();
+
+    for (let i = 1; i < rows.length; i++) {
+      if (String(rows[i][0]).trim() === String(body.id).trim()) {
+        sheet.deleteRow(i + 1);
+        return jsonOutput({ ok: true });
+      }
+    }
+
+    return jsonOutput({ ok: false, error: "Reseña no encontrada" });
+
+  } catch (err) {
+    return jsonOutput({ error: err.message });
+  }
+}
+
+function getSheet() {
+  try {
+    const spreadsheet = SpreadsheetApp.getActive();
+    if (!spreadsheet) return null;
+    return spreadsheet.getSheetByName(SHEET_NAME);
+  } catch (err) {
+    return null;
+  }
+}
+
+function getAllRows(sheet) {
+  try {
+    const rows = sheet.getDataRange().getValues();
+    if (rows.length < 2) return [];
+    const headers = rows.shift();
+    return rows.map(r => {
+      let obj = {};
+      headers.forEach((h, i) => obj[h] = r[i]);
+      return obj;
+    });
+  } catch (err) {
+    return [];
+  }
+}
+
+function jsonOutput(data) {
+  return ContentService
+    .createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
 }
 ```
 
 ### Conceptos Importantes:
 
-#### 1. **doGet(e)**
-- Función especial de Apps Script que maneja peticiones HTTP GET
-- `e.parameter` contiene los query params de la URL
-- Ejemplo: `?action=create&title=Matrix` → `e.parameter.action === 'create'`
+#### 1. **Métodos HTTP en Apps Script**
+Apps Script soporta funciones específicas para cada método:
+- `doGet(e)` → Maneja GET
+- `doPost(e)` → Maneja POST
+- `doPut(e)` → Maneja PUT
+- `doDelete(e)` → Maneja DELETE
 
-#### 2. **¿Por qué revisar `action` primero?**
+#### 2. **e.postData.contents**
 ```javascript
-const action = e.parameter.action;
-if (action === 'delete') { ... }
+const body = JSON.parse(e.postData.contents);
 ```
-Si revisamos `e.parameter.id` primero, podría confundir un delete con un "obtener por ID"
+- Para POST/PUT/DELETE, el body llega en `e.postData.contents` como string JSON
+- Hay que parsearlo para obtener el objeto JavaScript
 
 #### 3. **Índices de Sheets**
-- `sheet.getRange(i + 1, 2)` → Fila `i+1` (porque header es fila 1), Columna 2 (title)
+```javascript
+sheet.getRange(i + 1, 2).setValue(body.title);
+```
+- **Fila**: `i + 1` porque el header ocupa la fila 1 y el array empieza en 0
+- **Columna**: 2 = title, 3 = review, 4 = rating
 - Los índices en Google Sheets empiezan en 1, no en 0
 
 #### 4. **getAllRows()**
@@ -157,7 +325,7 @@ function getAllRows(sheet) {
   });
 }
 ```
-Convierte el array 2D de Sheets en array de objetos JSON:
+Convierte el array 2D de Sheets en array de objetos:
 ```
 [[id, title, ...], [1, "Matrix", ...]] 
 → 
@@ -169,49 +337,50 @@ Convierte el array 2D de Sheets en array de objetos JSON:
 ## 🔧 Servicio Angular (reviews.service.ts)
 
 ### Propósito
-El servicio es la **capa de comunicación** entre el componente y el backend. Encapsula toda la lógica HTTP.
+El servicio es la **capa de comunicación** entre el componente y el backend. Encapsula toda la lógica HTTP y mantiene las responsabilidades separadas.
 
-### Código:
+### Código Completo:
 
 ```typescript
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+export interface CreateReviewPayload {
+  title: string;
+  review: string;
+  rating: number;
+}
+
+export interface UpdateReviewPayload extends CreateReviewPayload {
+  id: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class ReviewsService {
   private http = inject(HttpClient);
-  private readonly baseUrl = 'https://script.google.com/...';
+  private readonly baseUrl = 'https://appscript-cors-proxy.misael-delamorena.workers.dev/';
 
   list(): Observable<any> {
+    console.log('🔍 Iniciando petición al API...');
     return this.http.get<any>(this.baseUrl);
   }
 
   create(payload: CreateReviewPayload): Observable<any> {
-    const params = new HttpParams()
-      .set('action', 'create')
-      .set('title', payload.title)
-      .set('review', payload.review)
-      .set('rating', payload.rating.toString());
-
-    return this.http.get<any>(this.baseUrl, { params });
-  }
-
-  update(payload: UpdateReviewPayload): Observable<any> {
-    const params = new HttpParams()
-      .set('action', 'update')
-      .set('id', payload.id)
-      .set('title', payload.title)
-      .set('review', payload.review)
-      .set('rating', payload.rating.toString());
-
-    return this.http.get<any>(this.baseUrl, { params });
+    console.log('✏️ Creando reseña:', payload);
+    return this.http.post<any>(this.baseUrl, payload);
   }
 
   delete(id: string): Observable<any> {
-    const params = new HttpParams()
-      .set('action', 'delete')
-      .set('id', id);
+    console.log('🗑️ Eliminando reseña:', id);
+    return this.http.delete<any>(this.baseUrl, { body: { id } });
+  }
 
-    return this.http.get<any>(this.baseUrl, { params });
+  update(payload: UpdateReviewPayload): Observable<any> {
+    console.log('✏️ Actualizando reseña:', payload);
+    return this.http.put<any>(this.baseUrl, payload);
   }
 }
 ```
@@ -219,108 +388,884 @@ export class ReviewsService {
 ### Conceptos Importantes:
 
 #### 1. **@Injectable({ providedIn: 'root' })**
+```typescript
+@Injectable({
+  providedIn: 'root',
+})
+```
 - Hace el servicio **Singleton** (una sola instancia en toda la app)
-- `providedIn: 'root'` → Se crea automáticamente cuando se necesita
+- `providedIn: 'root'` → Angular lo crea automáticamente cuando se necesita
+- No necesitas añadirlo al array `providers` del componente
 
 #### 2. **inject() vs constructor()**
 ```typescript
-// Moderno (Angular 14+)
+// ✅ Moderno (Angular 14+) - Function-based injection
 private http = inject(HttpClient);
 
-// Clásico
+// ⚠️ Clásico - Constructor injection
 constructor(private http: HttpClient) {}
 ```
-Ambos hacen lo mismo, pero `inject()` es más flexible.
+Ambos hacen lo mismo, pero `inject()`:
+- Es más flexible (puedes usarlo fuera del constructor)
+- Permite inyección condicional
+- Es el estilo recomendado en componentes standalone
 
-#### 3. **HttpParams**
+#### 3. **HttpClient - Métodos REST**
+
+##### GET - Listar
 ```typescript
-const params = new HttpParams()
-  .set('action', 'create')
-  .set('title', 'Matrix');
-
-// Genera: ?action=create&title=Matrix
+list(): Observable<any> {
+  return this.http.get<any>(this.baseUrl);
+}
 ```
-- **Inmutable**: cada `.set()` devuelve un nuevo objeto
-- **Encoding automático**: espacios → `%20`, etc.
+- `get<any>()` → Petición GET que devuelve `any` type
+- No necesita body ni params adicionales
 
-#### 4. **¿Por qué GET en lugar de POST?**
+##### POST - Crear
 ```typescript
-// Esto daría error de CORS con Google Apps Script:
-this.http.post(url, payload)
+create(payload: CreateReviewPayload): Observable<any> {
+  return this.http.post<any>(this.baseUrl, payload);
+}
+```
+- `post(url, body)` → Envía el `payload` como JSON en el body
+- Angular automáticamente serializa el objeto a JSON
+- Añade el header `Content-Type: application/json`
 
-// Solución: GET con parámetros
-this.http.get(url, { params })
+##### PUT - Actualizar
+```typescript
+update(payload: UpdateReviewPayload): Observable<any> {
+  return this.http.put<any>(this.baseUrl, payload);
+}
+```
+- Similar a POST pero semánticamente indica "actualización completa"
+- El `id` va incluido en el payload (`payload.id`)
+
+##### DELETE - Eliminar
+```typescript
+delete(id: string): Observable<any> {
+  return this.http.delete<any>(this.baseUrl, { body: { id } });
+}
+```
+- `delete()` normalmente no lleva body, pero Apps Script lo necesita
+- `{ body: { id } }` → Envía `{ "id": "123" }` en el body
+- Esto es específico de nuestra implementación con Apps Script
+
+#### 4. **Observable<any>**
+```typescript
+Observable<any>
+```
+- `Observable`: Stream de datos asíncrono (patrón RxJS)
+- `any`: No validamos el tipo (podrías usar interfaces más específicas)
+- **No ejecuta nada hasta que alguien se suscriba** con `.subscribe()`
+
+**Flujo:**
+```typescript
+// 1. El servicio devuelve un Observable (no ejecuta nada aún)
+const observable$ = this.reviewsService.list();
+
+// 2. El componente se suscribe (se ejecuta la petición HTTP)
+observable$.subscribe({
+  next: (data) => console.log('Datos:', data),
+  error: (err) => console.error('Error:', err),
+  complete: () => console.log('Completado'),
+});
 ```
 
-#### 5. **Observable<any>**
-- `Observable`: Stream de datos asíncrono
-- `any`: No validamos el tipo (podrías usar interfaces)
-- Para consumirlo: `.subscribe()`
+#### 5. **Interfaces TypeScript**
+```typescript
+export interface CreateReviewPayload {
+  title: string;
+  review: string;
+  rating: number;
+}
+
+export interface UpdateReviewPayload extends CreateReviewPayload {
+  id: string;
+}
+```
+- Define la estructura de los datos que el servicio acepta
+- `extends` → Hereda todas las propiedades + añade `id`
+- Ayuda a TypeScript a detectar errores en tiempo de compilación
 
 ---
 
 ## 🎨 Componente (crud-demo.ts)
 
 ### Propósito
-El componente es el **cerebro** de la vista. Maneja la lógica de negocio, el estado y coordina entre el servicio y la plantilla.
+El componente es el **cerebro** de la vista. Maneja:
+- La lógica de negocio
+- El estado de la aplicación
+- La coordinación entre el servicio y la plantilla HTML
+- Los eventos del usuario
 
-### Estado del Componente
+### Estado del Componente (Signals)
 
 ```typescript
-reviews = signal<Review[]>([]);      // Lista de reseñas
-loading = signal(true);               // ¿Está cargando?
-error = signal('');                   // Mensaje de error
-submitting = signal(false);           // ¿Enviando formulario?
-editingId = signal<string | null>(null); // ID en edición (null = creando)
+reviews = signal<Review[]>([]);           // Lista de reseñas
+loading = signal(true);                   // ¿Está cargando?
+error = signal('');                       // Mensaje de error
+submitting = signal(false);               // ¿Enviando formulario?
+editingId = signal<string | null>(null);  // ID en edición (null = creando)
 ```
 
-### ¿Por qué Signals?
+#### ¿Por qué Signals?
 
-**Antes (Angular 16-):**
+**Antes (Angular ≤16 - Change Detection tradicional):**
 ```typescript
 reviews: Review[] = [];
-// Problema: Angular no detecta cambios automáticamente
-this.reviews.push(newReview); // ❌ No se actualiza la vista
+
+addReview(review: Review) {
+  this.reviews.push(review); // ❌ Angular no detecta el cambio
+  // Necesitas: this.reviews = [...this.reviews, review];
+  // O: this.changeDetector.detectChanges();
+}
 ```
 
-**Ahora (Angular 17+):**
+**Ahora (Angular 17+ - Signals):**
 ```typescript
 reviews = signal<Review[]>([]);
-this.reviews.set([...this.reviews(), newReview]); // ✅ Se actualiza automáticamente
+
+addReview(review: Review) {
+  this.reviews.set([...this.reviews(), review]); // ✅ Cambio detectado automáticamente
+}
 ```
 
-**Beneficios:**
-- Detección de cambios más eficiente
-- No necesitas `ChangeDetectorRef`
-- Código más reactivo
+**Beneficios de Signals:**
+- ✅ Detección de cambios más eficiente (solo re-renderiza lo necesario)
+- ✅ No necesitas `ChangeDetectorRef`
+- ✅ Código más reactivo y predecible
+- ✅ Mejor performance en aplicaciones grandes
+
+#### API de Signals:
+
+```typescript
+// Crear signal
+const count = signal(0);
+
+// Leer valor
+console.log(count());  // 0
+
+// Actualizar valor
+count.set(5);          // Establece nuevo valor
+count.update(n => n + 1);  // Actualiza basándose en el valor anterior
+
+// En templates se accede con ()
+<p>{{ count() }}</p>
+```
 
 ### Formulario Reactivo
 
 ```typescript
 form = this.fb.group({
-  title: ['', [Validators.required, Validators.maxLength(120)]],
-  review: ['', [Validators.required, Validators.maxLength(1000)]],
+  title: ['', [Validators.required, Validators.maxLength(30)]],
+  review: ['', [Validators.required, Validators.maxLength(240)]],
   rating: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
 });
 ```
 
-#### ¿Por qué Formularios Reactivos?
+**Conceptos:**
+- `fb.group()` → Crea un FormGroup (grupo de controles)
+- Formato: `[valorInicial, [validadores]]`
+- `Validators.required` → Campo obligatorio
+- `Validators.maxLength(30)` → Máximo 30 caracteres
+- `Validators.min(1), Validators.max(5)` → Rating entre 1 y 5
 
-| Template-Driven | Reactive Forms |
-|----------------|----------------|
-| `[(ngModel)]` | `[formGroup]` |
-| Lógica en HTML | Lógica en TypeScript |
-| Menos control | Control total |
-| Testing difícil | Testing fácil |
+### Método: loadReviews()
 
-**Validaciones:**
 ```typescript
-Validators.required      // Campo obligatorio
-Validators.maxLength(120) // Máximo 120 caracteres
-Validators.min(1)        // Mínimo valor 1
+loadReviews(): void {
+  console.log('📋 loadReviews() ejecutándose');
+  this.loading.set(true);
+  this.error.set('');
+  
+  this.reviewsService.list().subscribe({
+    next: (data: any) => {
+      console.log('✅ Datos recibidos:', data);
+      const reviewsArray = Array.isArray(data) ? data : [data];
+      this.reviews.set(reviewsArray);
+      this.loading.set(false);
+    },
+    error: (err: any) => {
+      console.error('❌ Error:', err);
+      this.error.set('Error: ' + JSON.stringify(err));
+      this.loading.set(false);
+    },
+  });
+}
 ```
 
-### Métodos Principales
+**Desglose:**
+1. **Estado de carga**: `this.loading.set(true)` → Muestra spinner en la UI
+2. **Petición HTTP**: `this.reviewsService.list()` → Devuelve Observable
+3. **Subscribe**: Se suscribe al Observable con dos callbacks:
+   - `next`: Éxito → actualiza `reviews` y desactiva loading
+   - `error`: Error → muestra mensaje de error
+
+**Observer Pattern:**
+```typescript
+.subscribe({
+  next: (data) => { /* Qué hacer cuando llegan datos */ },
+  error: (err) => { /* Qué hacer si hay error */ },
+  complete: () => { /* Opcional: qué hacer cuando termina */ },
+})
+```
+
+### Método: onSubmit() - Crear o Actualizar
+
+```typescript
+onSubmit(): void {
+  // 1. Validar formulario
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    return;
+  }
+
+  this.submitting.set(true);
+  this.error.set('');
+
+  const payload = {
+    title: this.form.value.title || '',
+    review: this.form.value.review || '',
+    rating: Number(this.form.value.rating) || 5,
+  };
+
+  // 2. ¿Modo edición o creación?
+  if (this.editingId()) {
+    // ACTUALIZAR
+    this.reviewsService.update({ ...payload, id: this.editingId()! }).subscribe({
+      next: (response: any) => {
+        this.form.reset({ title: '', review: '', rating: 5 });
+        this.editingId.set(null);
+        this.submitting.set(false);
+        setTimeout(() => this.loadReviews(), 500);
+      },
+      error: (err: any) => {
+        this.error.set('Error al actualizar: ' + err?.message);
+        this.submitting.set(false);
+      },
+    });
+  } else {
+    // CREAR
+    this.reviewsService.create(payload).subscribe({
+      next: (response: any) => {
+        this.form.reset({ title: '', review: '', rating: 5 });
+        this.submitting.set(false);
+        setTimeout(() => this.loadReviews(), 500);
+      },
+      error: (err: any) => {
+        this.error.set('Error al crear: ' + err?.message);
+        this.submitting.set(false);
+      },
+    });
+  }
+}
+```
+
+**Conceptos clave:**
+
+#### 1. Validación del Formulario
+```typescript
+if (this.form.invalid) {
+  this.form.markAllAsTouched();  // Muestra todos los errores
+  return;
+}
+```
+
+#### 2. Spread Operator
+```typescript
+{ ...payload, id: this.editingId()! }
+// Equivale a:
+{
+  title: payload.title,
+  review: payload.review,
+  rating: payload.rating,
+  id: this.editingId()!,
+}
+```
+
+#### 3. Non-null Assertion (!)
+```typescript
+this.editingId()!
+```
+- Le dice a TypeScript: "Confía en mí, esto NO es null"
+- Úsalo solo cuando estés 100% seguro
+
+#### 4. setTimeout()
+```typescript
+setTimeout(() => this.loadReviews(), 500);
+```
+- Espera 500ms antes de recargar
+- Da tiempo a que el backend procese y persista los cambios
+
+### Método: onDelete()
+
+```typescript
+onDelete(id: string, title: string): void {
+  if (!confirm(`¿Seguro que quieres eliminar "${title}"?`)) {
+    return;
+  }
+
+  this.error.set('');
+
+  this.reviewsService.delete(id).subscribe({
+    next: (response: any) => {
+      if (response.ok === true || !response.error) {
+        setTimeout(() => this.loadReviews(), 500);
+      } else {
+        this.error.set('No se pudo eliminar: ' + response.error);
+      }
+    },
+    error: (err: any) => {
+      this.error.set('Error al eliminar: ' + err?.message);
+    },
+  });
+}
+```
+
+**Conceptos:**
+- `confirm()` → Diálogo nativo del navegador (devuelve boolean)
+- Validación de respuesta: `response.ok === true || !response.error`
+- Diferentes formas de manejar éxito/error del backend
+
+### Método: onEdit()
+
+```typescript
+onEdit(review: Review): void {
+  this.editingId.set(review.id);
+  this.form.patchValue({
+    title: review.title,
+    review: review.review,
+    rating: Number(review.rating),
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+```
+
+**Conceptos:**
+- `patchValue()` → Actualiza solo los campos especificados del formulario
+- `set()` vs `setValue()`: `patchValue()` es parcial, `setValue()` requiere todos los campos
+- `window.scrollTo()` → Mejora UX llevando al usuario al formulario
+
+---
+
+## 🧠 Conceptos Clave de Angular
+
+### 1. HttpClient
+
+El `HttpClient` es el servicio de Angular para hacer peticiones HTTP.
+
+```typescript
+import { HttpClient } from '@angular/common/http';
+
+// GET
+this.http.get(url)
+
+// POST
+this.http.post(url, body)
+
+// PUT
+this.http.put(url, body)
+
+// DELETE
+this.http.delete(url, { body })
+```
+
+**Características:**
+- Devuelve Observables (RxJS)
+- Automáticamente serializa/deserializa JSON
+- Maneja headers automáticamente
+- Integrado con interceptors para logging, auth, etc.
+
+### 2. Observables y el Patrón Observer
+
+Un **Observable** es un stream de datos que puede emitir valores a lo largo del tiempo.
+
+```typescript
+// El servicio devuelve un Observable
+const observable$ = this.http.get('/api/data');
+
+// Nada sucede hasta que alguien se suscribe
+observable$.subscribe({
+  next: (data) => console.log('Dato recibido:', data),
+  error: (err) => console.error('Error:', err),
+  complete: () => console.log('Completado'),
+});
+```
+
+**Patrón Observer:**
+```
+        Observable (Productor)
+              ↓
+    ┌─────────┴─────────┐
+    ↓                   ↓
+Observer 1         Observer 2
+(subscribe)        (subscribe)
+```
+
+**Características:**
+- **Lazy**: No ejecuta hasta que te suscribes
+- **Push-based**: El observable "empuja" datos a los observers
+- **Composable**: Puedes encadenar operadores (map, filter, etc.)
+- **Cancelable**: Puedes cancelar con `unsubscribe()`
+
+**Ejemplo de flujo:**
+```typescript
+// 1. Componente llama al servicio
+this.reviewsService.list()  // Devuelve Observable<any>
+  
+// 2. Se suscribe al Observable
+.subscribe({
+  // 3. Cuando llegan datos exitosamente
+  next: (data) => {
+    this.reviews.set(data);
+  },
+  
+  // 4. Si hay un error
+  error: (err) => {
+    this.error.set(err.message);
+  },
+  
+  // 5. Cuando la petición termina (opcional)
+  complete: () => {
+    console.log('Petición completada');
+  }
+});
+```
+
+### 3. Signals (Angular 17+)
+
+Los **Signals** son la nueva forma de manejar estado reactivo en Angular.
+
+```typescript
+// Crear un signal
+const count = signal(0);
+
+// Leer valor (se llama como función)
+console.log(count());  // 0
+
+// Actualizar valor
+count.set(5);           // Establece 5
+count.update(n => n + 1);  // Incrementa en 1
+
+// En templates
+<p>Contador: {{ count() }}</p>
+```
+
+**Comparación con propiedades normales:**
+
+```typescript
+// ❌ Propiedad normal (Angular ≤16)
+export class Component {
+  count = 0;
+  
+  increment() {
+    this.count++;
+    // Angular puede no detectar el cambio
+    // Necesitas strategies o ChangeDetectorRef
+  }
+}
+
+// ✅ Signal (Angular 17+)
+export class Component {
+  count = signal(0);
+  
+  increment() {
+    this.count.update(n => n + 1);
+    // Cambio detectado automáticamente
+    // UI se actualiza sin esfuerzo extra
+  }
+}
+```
+
+**Ventajas:**
+1. **Fine-grained reactivity**: Solo actualiza lo que cambió
+2. **Performance**: Menos re-renderizados innecesarios
+3. **Simplicidad**: No necesitas `OnPush` strategy
+4. **Type-safe**: TypeScript sabe el tipo en todo momento
+
+**Signals en el CRUD:**
+```typescript
+reviews = signal<Review[]>([]);      // Estado
+loading = signal(true);               // UI state
+error = signal('');                   // Error handling
+
+// Actualizar
+this.reviews.set(newData);            // Reemplaza todo
+this.loading.set(false);              // Toggle boolean
+this.error.set('Error message');      // Set string
+```
+
+### 4. Reactive Forms (Formularios Reactivos)
+
+Los **Reactive Forms** gestionan el estado del formulario en TypeScript, no en el template.
+
+```typescript
+form = this.fb.group({
+  title: ['', [Validators.required, Validators.maxLength(30)]],
+  review: ['', [Validators.required, Validators.maxLength(240)]],
+  rating: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
+});
+```
+
+**Estructura:**
+- `FormGroup`: Contiene el formulario completo
+- `FormControl`: Cada campo individual
+- Formato: `[valorInicial, [validadores]]`
+
+**Validadores Built-in:**
+```typescript
+Validators.required          // Campo obligatorio
+Validators.maxLength(30)     // Máximo 30 caracteres
+Validators.minLength(3)      // Mínimo 3 caracteres
+Validators.min(1)            // Valor mínimo 1
+Validators.max(5)            // Valor máximo 5
+Validators.email             // Email válido
+Validators.pattern(/regex/)  // Patrón regex
+```
+
+**Métodos útiles:**
+```typescript
+// Validación
+this.form.valid              // ¿Es válido?
+this.form.invalid            // ¿Es inválido?
+this.form.markAllAsTouched() // Marca todos como tocados (muestra errores)
+
+// Obtener valores
+this.form.value              // { title: '...', review: '...', rating: 5 }
+this.form.value.title        // Acceso a campo específico
+
+// Establecer valores
+this.form.setValue({ title: '', review: '', rating: 5 })  // Todos los campos
+this.form.patchValue({ title: 'Nuevo' })                  // Solo algunos campos
+
+// Resetear
+this.form.reset()                                   // Limpia todo
+this.form.reset({ title: '', review: '', rating: 5 })  // Con valores por defecto
+```
+
+**En el template:**
+```html
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <input formControlName="title">
+  <div *ngIf="form.get('title')?.invalid && form.get('title')?.touched">
+    Error: Campo obligatorio
+  </div>
+</form>
+```
+
+### 5. Dependency Injection (Inyección de Dependencias)
+
+Angular usa DI para proveer instancias de servicios a componentes.
+
+**Moderno (Angular 14+):**
+```typescript
+export class Component {
+  private reviewsService = inject(ReviewsService);
+  private fb = inject(FormBuilder);
+}
+```
+
+**Clásico:**
+```typescript
+export class Component {
+  constructor(
+    private reviewsService: ReviewsService,
+    private fb: FormBuilder
+  ) {}
+}
+```
+
+**¿Cómo funciona?**
+```
+1. ReviewsService tiene @Injectable({ providedIn: 'root' })
+2. Angular crea UNA instancia (singleton)
+3. Cuando un componente hace inject(), recibe esa instancia
+4. Todos los componentes comparten la misma instancia
+```
+
+**Beneficios:**
+- ✅ Singleton automático
+- ✅ Testing fácil (puedes mockear servicios)
+- ✅ Desacoplamiento (componentes no crean sus dependencias)
+
+---
+
+## 🔄 Flujo de Datos Completo
+
+### Crear una Reseña (POST)
+
+```
+┌──────────────┐
+│   Usuario    │
+│ Rellena form │
+└──────┬───────┘
+       │ Hace clic en "Agregar"
+       ▼
+┌──────────────────┐
+│  crud-demo.ts    │
+│  onSubmit()      │
+└──────┬───────────┘
+       │ 1. Valida form
+       │ 2. Crea payload
+       ▼
+┌──────────────────┐
+│ reviews.service  │
+│ create(payload)  │
+└──────┬───────────┘
+       │ this.http.post(url, payload)
+       ▼
+┌──────────────────┐
+│ Cloudflare       │
+│ Worker (Proxy)   │
+└──────┬───────────┘
+       │ Reenvía POST con body JSON
+       ▼
+┌──────────────────┐
+│ Google Apps      │
+│ Script           │
+│ doPost(e)        │
+└──────┬───────────┘
+       │ 1. Parse JSON
+       │ 2. sheet.appendRow()
+       │ 3. return { ok: true }
+       ▼
+┌──────────────────┐
+│ Respuesta JSON   │
+│ { ok: true }     │
+└──────┬───────────┘
+       │ Observable.next()
+       ▼
+┌──────────────────┐
+│  crud-demo.ts    │
+│  .subscribe({    │
+│    next: ...     │
+│  })              │
+└──────┬───────────┘
+       │ 1. form.reset()
+       │ 2. loadReviews()
+       ▼
+┌──────────────────┐
+│   UI se          │
+│   actualiza      │
+└──────────────────┘
+```
+
+### Leer Reseñas (GET)
+
+```
+Component ngOnInit()
+    ↓
+loadReviews()
+    ↓
+reviewsService.list()  → http.get(url)
+    ↓
+Cloudflare Worker → GET to Apps Script
+    ↓
+Apps Script doGet() → getAllRows()
+    ↓
+Return JSON array
+    ↓
+Observable.next(data)
+    ↓
+.subscribe({ next: (data) => reviews.set(data) })
+    ↓
+UI muestra las reseñas con *ngFor
+```
+
+### Actualizar Reseña (PUT)
+
+```
+Usuario hace clic en "Editar"
+    ↓
+onEdit(review)
+    ↓
+editingId.set(review.id)
+form.patchValue(review)
+    ↓
+Usuario modifica y envía
+    ↓
+onSubmit() detecta editingId() !== null
+    ↓
+reviewsService.update({ ...payload, id })
+    ↓
+http.put(url, body)
+    ↓
+Worker → PUT to Apps Script
+    ↓
+doPut(e) → encuentra row → update
+    ↓
+Response { ok: true }
+    ↓
+.subscribe() → loadReviews()
+```
+
+### Eliminar Reseña (DELETE)
+
+```
+Usuario hace clic en "Eliminar"
+    ↓
+onDelete(id, title)
+    ↓
+confirm() → ¿Seguro?
+    ↓
+reviewsService.delete(id)
+    ↓
+http.delete(url, { body: { id } })
+    ↓
+Worker → DELETE to Apps Script
+    ↓
+doDelete(e) → encuentra row → sheet.deleteRow()
+    ↓
+Response { ok: true }
+    ↓
+.subscribe() → loadReviews()
+```
+
+---
+
+## 🚨 Problemas Comunes y Soluciones
+
+### 1. CORS Error
+
+**Error:**
+```
+Access to fetch at 'https://script.google.com/...' from origin 'http://localhost:4200' 
+has been blocked by CORS policy
+```
+
+**Causa:** Google Apps Script no acepta POST/PUT/DELETE desde navegadores.
+
+**Solución:** Usar Cloudflare Worker como proxy que añade los headers CORS.
+
+### 2. Los Signals no se actualizan en la UI
+
+**Problema:**
+```typescript
+this.reviews().push(newReview);  // ❌ No funciona
+```
+
+**Solución:**
+```typescript
+this.reviews.set([...this.reviews(), newReview]);  // ✅ Crea nuevo array
+```
+Los Signals necesitan que cambies la referencia, no que mutes el objeto.
+
+### 3. Formulario no muestra errores
+
+**Problema:** Validaciones no aparecen.
+
+**Solución:**
+```typescript
+if (this.form.invalid) {
+  this.form.markAllAsTouched();  // Marca todos los campos como tocados
+  return;
+}
+```
+
+### 4. Observable no ejecuta nada
+
+**Problema:**
+```typescript
+this.reviewsService.list();  // No pasa nada
+```
+
+**Solución:**
+```typescript
+this.reviewsService.list().subscribe({  // ✅ Necesitas suscribirte
+  next: (data) => console.log(data),
+});
+```
+Los Observables son **lazy**, no hacen nada hasta que alguien se suscribe.
+
+### 5. Memory Leaks con Subscriptions
+
+**Problema:** Subscripciones que no se limpian.
+
+**Solución 1 - Async Pipe:**
+```typescript
+// En el componente
+reviews$ = this.reviewsService.list();
+
+// En el template
+<div *ngFor="let review of reviews$ | async">
+```
+
+**Solución 2 - takeUntilDestroyed:**
+```typescript
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+this.reviewsService.list()
+  .pipe(takeUntilDestroyed())
+  .subscribe(...);
+```
+
+### 6. Apps Script devuelve texto en lugar de JSON
+
+**Causa:** No usaste `ContentService.MimeType.JSON`
+
+**Solución:**
+```javascript
+function jsonOutput(data) {
+  return ContentService
+    .createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);  // ← Importante
+}
+```
+
+---
+
+## 📝 Resumen de la Arquitectura
+
+### Frontend (Angular)
+- **Componente**: Maneja la lógica de UI, formularios, eventos
+- **Servicio**: Encapsula las llamadas HTTP
+- **HttpClient**: Hace peticiones REST (GET/POST/PUT/DELETE)
+- **Signals**: Maneja estado reactivo
+- **Reactive Forms**: Valida y gestiona formularios
+
+### Middleware
+- **Cloudflare Worker**: Proxy que resuelve CORS y reenvía peticiones
+
+### Backend (Google Apps Script)
+- **doGet/doPost/doPut/doDelete**: Maneja cada método HTTP
+- **Google Sheets**: Base de datos visual
+
+### Comunicación
+- **Observables (RxJS)**: Streams asíncronos
+- **JSON**: Formato de intercambio de datos
+- **REST APIs**: GET, POST, PUT, DELETE
+
+---
+
+## 🎓 Conceptos Aprendidos
+
+1. ✅ **HttpClient** para peticiones HTTP
+2. ✅ **Observables** y patrón Observer
+3. ✅ **Signals** para estado reactivo
+4. ✅ **Reactive Forms** para formularios
+5. ✅ **Dependency Injection** con `inject()`
+6. ✅ **Services** para lógica de negocio
+7. ✅ **CORS** y cómo resolverlo con proxies
+8. ✅ **REST APIs** (GET, POST, PUT, DELETE)
+9. ✅ **Google Apps Script** como backend
+10. ✅ **TypeScript interfaces** para type safety
+
+---
+
+## 🚀 Próximos Pasos
+
+1. Añadir **validaciones personalizadas** al formulario
+2. Implementar **paginación** para muchas reseñas
+3. Usar **RxJS operators** (map, filter, debounceTime)
+4. Añadir **loading skeletons** durante cargas
+5. Implementar **optimistic updates** (actualizar UI antes de respuesta)
+6. Añadir **interceptors** para logging automático
+7. Crear **custom validators** para campos específicos
+8. Implementar **error handling** global
+
+---
+
+**¡CRUD completado exitosamente! 🎉**
 
 #### 1. **loadReviews() - READ**
 ```typescript
@@ -720,17 +1665,17 @@ this.reviews.set([...this.reviews(), newReview]);
 
 ## ✅ Checklist de Implementación
 
-- [ ] Google Sheet creado con columnas correctas
-- [ ] Apps Script publicado como Web App
-- [ ] Acceso configurado como "Cualquiera"
-- [ ] URL del script copiada en reviews.service.ts
-- [ ] provideHttpClient() en app.config.ts
-- [ ] Interfaces Review definidas
-- [ ] Validaciones del formulario configuradas
-- [ ] Manejo de errores implementado
-- [ ] Loading states implementados
-- [ ] Confirmación antes de eliminar
-- [ ] Estilos Tailwind aplicados
+- [x] Google Sheet creado con columnas correctas
+- [x] Apps Script publicado como Web App
+- [x] Acceso configurado como "Cualquiera"
+- [x] URL del script copiada en reviews.service.ts
+- [x] provideHttpClient() en app.config.ts
+- [x] Interfaces Review definidas
+- [x] Validaciones del formulario configuradas
+- [x] Manejo de errores implementado
+- [x] Loading states implementados
+- [x] Confirmación antes de eliminar
+- [x] Estilos Tailwind aplicados
 
 ---
 

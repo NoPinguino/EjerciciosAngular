@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ReviewsService } from '../../services/reviews/reviews.service';
@@ -14,17 +14,20 @@ import { Review } from '../../models/review';
 export class CrudDemo implements OnInit {
   private reviewsService = inject(ReviewsService);
   private fb = inject(FormBuilder);
+  @ViewChild('formulario') formulario!: ElementRef;
 
   reviews = signal<Review[]>([]);
   loading = signal(true);
   error = signal('');
   submitting = signal(false);
   editingId = signal<string | null>(null);
+  selectedImage = signal<string | null>(null);
 
   form = this.fb.group({
     title: ['', [Validators.required, Validators.maxLength(30)]],
     review: ['', [Validators.required, Validators.maxLength(240)]],
     rating: [5, [Validators.required, Validators.min(1), Validators.max(5)]],
+    image: [''],
   });
 
   constructor() {
@@ -70,6 +73,7 @@ export class CrudDemo implements OnInit {
       title: this.form.value.title || '',
       review: this.form.value.review || '',
       rating: Number(this.form.value.rating) || 5,
+      image: this.selectedImage() || '',
     };
 
     // Si está editando
@@ -79,10 +83,14 @@ export class CrudDemo implements OnInit {
       this.reviewsService.update({ ...payload, id: this.editingId()! }).subscribe({
         next: (response: any) => {
           console.log('✅ Reseña actualizada:', response);
-          this.form.reset({ title: '', review: '', rating: 5 });
+          this.form.reset({ title: '', review: '', rating: 5, image: '' });
+          this.selectedImage.set(null);
           this.editingId.set(null);
           this.submitting.set(false);
           this.error.set('');
+          // Limpiar input file
+          const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+          if (fileInput) fileInput.value = '';
           setTimeout(() => this.loadReviews(), 500);
         },
         error: (err: any) => {
@@ -100,9 +108,13 @@ export class CrudDemo implements OnInit {
     this.reviewsService.create(payload).subscribe({
       next: (response: any) => {
         console.log('✅ Reseña creada exitosamente:', response);
-        this.form.reset({ title: '', review: '', rating: 5 });
+        this.form.reset({ title: '', review: '', rating: 5, image: '' });
+        this.selectedImage.set(null);
         this.submitting.set(false);
         this.error.set('');
+        // Limpiar input file
+        const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+        if (fileInput) fileInput.value = '';
         setTimeout(() => this.loadReviews(), 500);
       },
       error: (err: any) => {
@@ -116,22 +128,91 @@ export class CrudDemo implements OnInit {
     });
   }
 
+  onImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+
+    if (!file) return;
+
+    // Validar que sea imagen
+    if (!file.type.startsWith('image/')) {
+      this.error.set('Por favor selecciona una imagen válida');
+      return;
+    }
+
+    // Validar tamaño (máx 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      this.error.set('La imagen no puede exceder 5MB');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const base64 = e.target?.result as string;
+      // Comprimir la imagen usando canvas
+      this.compressImage(base64);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  private compressImage(base64: string): void {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      // Tamaño máximo más pequeño para reducir el tamaño del archivo
+      const maxWidth = 300;
+      const maxHeight = 300;
+      let width = img.width;
+      let height = img.height;
+
+      // Calcular nuevas dimensiones
+      if (width > height) {
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+      } else {
+        if (height > maxHeight) {
+          width = Math.round((width * maxHeight) / height);
+          height = maxHeight;
+        }
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      ctx?.drawImage(img, 0, 0, width, height);
+
+      // Convertir a base64 comprimido con menor calidad
+      const compressedBase64 = canvas.toDataURL('image/jpeg', 0.5);
+      this.selectedImage.set(compressedBase64);
+      console.log('✅ Imagen comprimida y cargada');
+    };
+    img.src = base64;
+  }
+
   onEdit(review: Review): void {
     console.log('✏️ Editando reseña:', review);
     this.editingId.set(review.id);
+    this.selectedImage.set(review.image || null);
     this.form.patchValue({
       title: review.title,
       review: review.review,
       rating: Number(review.rating),
+      image: review.image || '',
     });
-    // Scroll al formulario
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Scroll al formulario de forma suave
+    setTimeout(() => {
+      this.formulario?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 0);
   }
 
   cancelEdit(): void {
     console.log('❌ Cancelando edición');
     this.editingId.set(null);
-    this.form.reset({ title: '', review: '', rating: 5 });
+    this.selectedImage.set(null);
+    this.form.reset({ title: '', review: '', rating: 5, image: '' });
   }
 
   onDelete(id: string, title: string): void {
