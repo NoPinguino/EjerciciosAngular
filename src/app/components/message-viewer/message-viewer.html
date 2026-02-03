@@ -1,10 +1,10 @@
-<div class="bg-white rounded-2xl shadow-md p-6 flex flex-col gap-4">
-  <h3 class="text-xl font-semibold text-purple-600">Componente receptor</h3>
+<div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 flex flex-col gap-4">
+  <h3 class="text-xl font-semibold text-purple-600 dark:text-purple-400">Componente receptor</h3>
 
-  <p class="text-gray-600">Lee el estado reactivo del servicio</p>
+  <p class="text-gray-600 dark:text-gray-400">Lee el estado reactivo del servicio</p>
 
   <div
-    class="bg-purple-50 text-purple-700 p-4 rounded-lg text-lg h-14 flex items-center justify-center"
+    class="bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 p-4 rounded-lg text-lg h-14 flex items-center justify-center"
   >
     {{ store.mensaje() }}
   </div>

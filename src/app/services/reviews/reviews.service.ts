@@ -1,7 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Review } from '../../models/review';
 
 export interface CreateReviewPayload {
   title: string;
@@ -18,7 +17,7 @@ export interface UpdateReviewPayload extends CreateReviewPayload {
 })
 export class ReviewsService {
   private http = inject(HttpClient);
-  private readonly baseUrl = 'https://script.google.com/macros/s/AKfycbyvuBACHttpWBdDfTN3xFoYKutTwUHOgSpHCQxr5vygpxhLIo7jzU9Kw3pZv8JZr9vH/exec';
+  private readonly baseUrl = 'https://appscript-cors-proxy.misael-delamorena.workers.dev/';
 
   list(): Observable<any> {
     console.log('🔍 Iniciando petición al API...');
@@ -27,36 +26,19 @@ export class ReviewsService {
 
   create(payload: CreateReviewPayload): Observable<any> {
     console.log('✏️ Creando reseña:', payload);
-    
-    const params = new HttpParams()
-      .set('action', 'create')
-      .set('title', payload.title)
-      .set('review', payload.review)
-      .set('rating', payload.rating.toString());
 
-    return this.http.get<any>(this.baseUrl, { params });
+    return this.http.post<any>(this.baseUrl, payload);
   }
 
   delete(id: string): Observable<any> {
     console.log('🗑️ Eliminando reseña:', id);
-    
-    const params = new HttpParams()
-      .set('action', 'delete')
-      .set('id', id);
 
-    return this.http.get<any>(this.baseUrl, { params });
+    return this.http.delete<any>(this.baseUrl, { body: { id } });
   }
 
   update(payload: UpdateReviewPayload): Observable<any> {
     console.log('✏️ Actualizando reseña:', payload);
-    
-    const params = new HttpParams()
-      .set('action', 'update')
-      .set('id', payload.id)
-      .set('title', payload.title)
-      .set('review', payload.review)
-      .set('rating', payload.rating.toString());
 
-    return this.http.get<any>(this.baseUrl, { params });
+    return this.http.put<any>(this.baseUrl, payload);
   }
 }

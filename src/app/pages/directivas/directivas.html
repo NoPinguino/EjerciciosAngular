@@ -1,9 +1,10 @@
-<div class="max-w-full px-2 sm:px-4 md:px-6 py-3 sm:py-6">
-  <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold mb-4 sm:mb-6 text-center">
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4">
+  <div class="max-w-full mx-auto">
+  <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold mb-4 sm:mb-6 text-center text-gray-900 dark:text-gray-100">
     Ejemplos de Directivas y Pipes en Angular
   </h1>
 
-  <h2 class="text-xl sm:text-2xl md:text-3xl font-semibold mt-4 sm:mt-6 mb-3 sm:mb-4 text-center">Directivas de Angular.</h2>
+  <h2 class="text-xl sm:text-2xl md:text-3xl font-semibold mt-4 sm:mt-6 mb-3 sm:mb-4 text-center text-gray-900 dark:text-gray-100">Directivas de Angular.</h2>
   <p class="text-xs sm:text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed">
     Las directivas son uno de los conceptos fundamentales de Angular y permiten extender el
     comportamiento del DOM. Gracias a ellas, Angular puede modificar la estructura de la vista,
@@ -22,68 +23,68 @@
     mediante un selector personalizado y permiten reutilizar partes de la interfaz.
   </p>
   <div class="mt-6 grid grid-cols-1 gap-6">
-    <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col gap-4">
-      <h2 class="text-xl font-semibold text-indigo-600">Componente</h2>
-      <p class="text-gray-600">Uso de un componente como directiva</p>
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-indigo-600 dark:text-indigo-400">Componente</h2>
+      <p class="text-gray-600 dark:text-gray-400">Uso de un componente como directiva</p>
 
-      <div class="bg-indigo-50 text-indigo-700 p-3 rounded-lg">
+      <div class="bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 p-3 rounded-lg">
         &lt;app-ejemplo&gt;&lt;/app-ejemplo&gt;
       </div>
 
-      <p class="text-sm text-gray-500">
+      <p class="text-sm text-gray-500 dark:text-gray-400">
         Los componentes encapsulan HTML, CSS y lógica en una sola unidad reutilizable.
       </p>
     </div>
   </div>
 
   <!---========== DIRECTIVAS ESTRUCTURALES ==========--->
-  <h3 class="text-2xl font-semibold mt-8 mb-4 text-gray-700">Directivas estructurales.</h3>
+  <h3 class="text-lg sm:text-xl md:text-2xl font-semibold mt-6 sm:mt-10 mb-3 sm:mb-4 text-gray-700 dark:text-gray-300">Directivas estructurales.</h3>
   <!-- GRID CON CARDS --->
   <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
     <!-- ngIf Card --->
-    <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col gap-4">
-      <h2 class="text-xl font-semibold text-blue-600">*ngIf</h2>
-      <p class="text-gray-600">Renderizado condicional de elementos</p>
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-blue-600 dark:text-blue-400">*ngIf</h2>
+      <p class="text-gray-600 dark:text-gray-400">Renderizado condicional de elementos</p>
 
       <button
-        class="cursor-pointer bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
+        class="cursor-pointer bg-blue-500 dark:bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 transition"
         (click)="mostrar = !mostrar"
       >
         {{ mostrar ? 'Ocultar mensaje' : 'Mostrar mensaje' }}
       </button>
 
-      <p *ngIf="mostrar" class="bg-blue-50 text-blue-700 p-3 rounded-lg">
+      <p *ngIf="mostrar" class="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 p-3 rounded-lg">
         Este mensaje se muestra usando <strong>*ngIf</strong>
       </p>
     </div>
     <!-- ngFor Card --->
-    <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col gap-4">
-      <h2 class="text-xl font-semibold text-green-600">*ngFor</h2>
-      <p class="text-gray-600">Generación dinámica de listas</p>
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-green-600 dark:text-green-400">*ngFor</h2>
+      <p class="text-gray-600 dark:text-gray-400">Generación dinámica de listas</p>
       <ul class="space-y-2">
         <li
           *ngFor="let directiva of directivas; index as i"
-          class="bg-green-50 text-green-700 px-3 py-2 rounded-lg"
+          class="bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 px-3 py-2 rounded-lg"
         >
           {{ i + 1 }} - {{ directiva }}
         </li>
       </ul>
     </div>
     <!-- ngSwitch Card --->
-    <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col gap-4">
-      <h2 class="text-xl font-semibold text-purple-600">*ngSwitch</h2>
-      <p class="text-gray-600">Mostrar contenido según selección</p>
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-purple-600 dark:text-purple-400">*ngSwitch</h2>
+      <p class="text-gray-600 dark:text-gray-400">Mostrar contenido según selección</p>
 
       <select
         [(ngModel)]="nivel"
-        class="border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
+        class="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
       >
         <option value="basico">Básico</option>
         <option value="intermedio">Intermedio</option>
         <option value="avanzado">Avanzado</option>
       </select>
 
-      <div [ngSwitch]="nivel" class="p-3 rounded-lg bg-purple-50 text-purple-700">
+      <div [ngSwitch]="nivel" class="p-3 rounded-lg bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300">
         <p *ngSwitchCase="'basico'">Nivel básico seleccionado</p>
         <p *ngSwitchCase="'intermedio'">Nivel intermedio seleccionado</p>
         <p *ngSwitchCase="'avanzado'">Nivel avanzado seleccionado</p>
@@ -91,8 +92,8 @@
       </div>
     </div>
   </div>
-  <h3 class="text-2xl font-semibold mt-10 mb-4 text-gray-700">Directivas atributo.</h3>
-  <p>
+  <h3 class="text-2xl font-semibold mt-10 mb-4 text-gray-700 dark:text-gray-300">Directivas atributo.</h3>
+  <p class="text-gray-700 dark:text-gray-300">
     Las directivas atributo modifican la apariencia o el comportamiento de un elemento existente sin
     cambiar su estructura. Se aplican como atributos y suelen utilizarse para estilos, estados o
     enlaces de datos.
@@ -101,12 +102,12 @@
   <!---========== DIRECTIVAS DE ATRIBUTO ==========--->
   <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
     <!-- ngClass Card --->
-    <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col gap-4">
-      <h2 class="text-xl font-semibold text-orange-600">ngClass</h2>
-      <p class="text-gray-600">Aplicación dinámica de clases CSS</p>
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-orange-600 dark:text-orange-400">ngClass</h2>
+      <p class="text-gray-600 dark:text-gray-400">Aplicación dinámica de clases CSS</p>
 
       <button
-        class="cursor-pointer py-2 rounded-lg bg-orange-500 text-white hover:bg-orange-600 transition"
+        class="cursor-pointer py-2 rounded-lg bg-orange-500 dark:bg-orange-600 text-white hover:bg-orange-600 dark:hover:bg-orange-700 transition"
         (click)="activo = !activo"
       >
         Alternar estilo
@@ -114,8 +115,8 @@
 
       <p
         [ngClass]="{
-          'bg-orange-50 text-orange-700': activo,
-          'bg-gray-100 text-gray-600': !activo
+          'bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300': activo,
+          'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400': !activo
         }"
         class="p-3 rounded-lg"
       >
@@ -123,24 +124,24 @@
       </p>
     </div>
     <!-- ngStyle Card --->
-    <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col gap-4">
-      <h2 class="text-xl font-semibold text-teal-600">ngStyle</h2>
-      <p class="text-gray-600">Aplicación dinámica de estilos en línea</p>
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-teal-600 dark:text-teal-400">ngStyle</h2>
+      <p class="text-gray-600 dark:text-gray-400">Aplicación dinámica de estilos en línea</p>
 
       <p
         [ngStyle]="{
           'font-size': ngStyleTextSize + 'px',
           'color': 'teal'
         }"
-        class="bg-teal-50 p-3 rounded-lg"
+        class="bg-teal-50 dark:bg-teal-900/20 p-3 rounded-lg"
       >
         Texto con estilo dinámico usando <strong>ngStyle</strong>
       </p>
     </div>
   </div>
 
-  <h2 class="text-3xl font-semibold mt-8 mb-4 text-center">Pipes.</h2>
-  <p>
+  <h2 class="text-3xl font-semibold mt-8 mb-4 text-center text-gray-900 dark:text-gray-100">Pipes.</h2>
+  <p class="text-gray-700 dark:text-gray-300">
     Las pipes en Angular permiten transformar datos directamente en la vista sin modificar el valor
     original. Son muy útiles para dar formato a textos, fechas, números o para depurar información
     de forma sencilla y declarativa.
@@ -149,43 +150,43 @@
   <!-- GRID RESPONSIVE -->
   <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
     <!-- ================= UPPERCASE PIPE ================= -->
-    <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col gap-4">
-      <h2 class="text-xl font-semibold text-blue-600">uppercase</h2>
-      <p class="text-gray-600">Transforma texto a mayúsculas</p>
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-blue-600 dark:text-blue-400">uppercase</h2>
+      <p class="text-gray-600 dark:text-gray-400">Transforma texto a mayúsculas</p>
 
-      <p class="bg-blue-50 text-blue-700 p-3 rounded-lg">{{ nombre | uppercase }}</p>
+      <p class="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 p-3 rounded-lg">{{ nombre | uppercase }}</p>
     </div>
 
     <!-- ================= DATE PIPE ================= -->
-    <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col gap-4">
-      <h2 class="text-xl font-semibold text-green-600">date</h2>
-      <p class="text-gray-600">Formateo de fechas</p>
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-green-600 dark:text-green-400">date</h2>
+      <p class="text-gray-600 dark:text-gray-400">Formateo de fechas</p>
 
-      <p class="bg-green-50 text-green-700 p-3 rounded-lg">{{ fechaActual | date:'dd/MM/yyyy' }}</p>
+      <p class="bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 p-3 rounded-lg">{{ fechaActual | date:'dd/MM/yyyy' }}</p>
     </div>
 
     <!-- ================= CURRENCY PIPE ================= -->
-    <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col gap-4">
-      <h2 class="text-xl font-semibold text-purple-600">currency</h2>
-      <p class="text-gray-600">Formato de valores monetarios</p>
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-purple-600 dark:text-purple-400">currency</h2>
+      <p class="text-gray-600 dark:text-gray-400">Formato de valores monetarios</p>
 
-      <p class="bg-purple-50 text-purple-700 p-3 rounded-lg">{{ precio | currency:'EUR' }}</p>
+      <p class="bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 p-3 rounded-lg">{{ precio | currency:'EUR' }}</p>
     </div>
 
     <!-- ================= SLICE PIPE ================= -->
-    <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col gap-4">
-      <h2 class="text-xl font-semibold text-red-600">slice</h2>
-      <p class="text-gray-600">Recorte de strings</p>
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 flex flex-col gap-4">
+      <h2 class="text-xl font-semibold text-red-600 dark:text-red-400">slice</h2>
+      <p class="text-gray-600 dark:text-gray-400">Recorte de strings</p>
 
-      <p class="bg-red-50 text-red-700 p-3 rounded-lg">{{ textoLargo | slice:0:20 }}...</p>
+      <p class="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 p-3 rounded-lg">{{ textoLargo | slice:0:20 }}...</p>
     </div>
 
     <!-- ================= JSON PIPE ================= -->
-    <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col gap-4 lg:col-span-2">
-      <h2 class="text-xl font-semibold text-gray-700">json</h2>
-      <p class="text-gray-600">Visualización de objetos (debug)</p>
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 flex flex-col gap-4 lg:col-span-2">
+      <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-300">json</h2>
+      <p class="text-gray-600 dark:text-gray-400">Visualización de objetos (debug)</p>
 
-      <pre class="bg-gray-100 text-gray-800 p-3 rounded-lg overflow-auto text-sm">
+      <pre class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 p-3 rounded-lg overflow-auto text-sm">
 {{ usuario | json }}</pre
       >
     </div>

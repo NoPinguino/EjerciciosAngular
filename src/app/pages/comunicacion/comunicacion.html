@@ -1,11 +1,12 @@
-<div class="max-w-full px-2 sm:px-4 md:px-6 py-3 sm:py-6 space-y-6 sm:space-y-8">
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4">
+  <div class="max-w-full mx-auto space-y-6 sm:space-y-8">
   <!-- Título principal -->
   <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-center text-gray-800 dark:text-gray-100 mb-4 sm:mb-6">
     Comunicación entre componentes
   </h1>
 
   <section class="space-y-6 sm:space-y-8">
-    <h2 class="text-xl sm:text-2xl md:text-3xl font-semibold mt-0 mb-3 sm:mb-4 text-center">Comunicación: @Input y @Output.</h2>
+    <h2 class="text-xl sm:text-2xl md:text-3xl font-semibold mt-0 mb-3 sm:mb-4 text-center text-gray-900 dark:text-gray-100">Comunicación: @Input y @Output.</h2>
     <!-- Selector de estilo -->
     <div class="flex flex-col items-center space-y-3 sm:space-y-4">
       <p class="font-semibold text-gray-700 dark:text-gray-300 text-sm sm:text-base md:text-lg text-center">
@@ -50,7 +51,7 @@
           (click)="colorSeleccionado=''"
           [ngClass]="colorSeleccionado === ''
             ? 'bg-gray-500 text-white'
-            : 'bg-gray-300 text-gray-800 hover:bg-gray-400'"
+            : 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 hover:bg-gray-400 dark:hover:bg-gray-500'"
           class="w-36 px-6 py-3 cursor-pointer rounded-lg shadow transition"
         >
           Restablecer
@@ -61,7 +62,7 @@
     <!-- Mensaje recibido del hijo -->
     <div
       *ngIf="mensajeDelHijo"
-      class="p-6 bg-gray-50 dark:bg-gray-900 rounded-xl shadow-lg text-center border border-gray-200 dark:border-gray-700 w-full mx-auto"
+      class="p-6 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-lg text-center border border-gray-200 dark:border-gray-700 w-full mx-auto"
     >
       <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Mensaje del hijo:</p>
       <p class="text-xl font-semibold text-gray-800 dark:text-gray-100 wrap-break-word">
@@ -78,9 +79,9 @@
   </section>
 
   <section class="max-w-full mx-auto space-y-6">
-    <h2 class="text-3xl font-bold text-center">Comunicación con servicio (Store + Signals)</h2>
+    <h2 class="text-3xl font-bold text-center text-gray-900 dark:text-gray-100">Comunicación con servicio (Store + Signals)</h2>
 
-    <p class="text-center text-gray-600">
+    <p class="text-center text-gray-600 dark:text-gray-400">
       Dos componentes se comunican usando un servicio con estado compartido, sin relación
       padre-hijo.
     </p>
@@ -92,7 +93,7 @@
   </section>
 
   <section class="max-w-full mx-auto mt-12 space-y-6">
-    <h2 class="text-3xl font-bold text-center">Comunicación por URL: Router.</h2>
+    <h2 class="text-3xl font-bold text-center text-gray-900 dark:text-gray-100">Comunicación por URL: Router.</h2>
 
     <ul class="space-y-4">
       <div
@@ -111,4 +112,5 @@
       </div>
     </ul>
   </section>
+  </div>
 </div>

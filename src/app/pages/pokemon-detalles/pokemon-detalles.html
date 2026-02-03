@@ -1,8 +1,10 @@
-<div
-  *ngIf="pokemon"
-  class="max-w-xl mx-auto mt-0 mb-4 sm:mb-8 p-3 sm:p-6 md:p-8 bg-white dark:bg-gray-900 rounded-lg sm:rounded-2xl md:rounded-3xl shadow-xl border border-gray-200 dark:border-gray-700"
->
-  <div class="flex flex-col items-center space-y-4 sm:space-y-6">
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4">
+  <div class="max-w-full mx-auto">
+  <div
+    *ngIf="pokemon"
+    class="max-w-xl mx-auto mt-0 mb-4 sm:mb-8 p-3 sm:p-6 md:p-8 bg-white dark:bg-gray-900 rounded-lg sm:rounded-2xl md:rounded-3xl shadow-xl border border-gray-200 dark:border-gray-700"
+  >
+    <div class="flex flex-col items-center space-y-4 sm:space-y-6">
     <!-- Imagen con fondo circular -->
     <div
       class="w-24 sm:w-32 md:w-36 h-24 sm:h-32 md:h-36 rounded-full overflow-hidden shadow-md border-4 border-purple-200 dark:border-purple-700"
@@ -60,5 +62,6 @@
     >
       Volver a Comunicación
     </button>
+  </div>
   </div>
 </div>
