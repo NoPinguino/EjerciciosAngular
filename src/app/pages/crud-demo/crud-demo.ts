@@ -14,6 +14,7 @@ import { Review } from '../../models/review';
 export class CrudDemo implements OnInit {
   private reviewsService = inject(ReviewsService);
   private fb = inject(FormBuilder);
+
   @ViewChild('formulario') formulario!: ElementRef;
 
   reviews = signal<Review[]>([]);
@@ -194,8 +195,11 @@ export class CrudDemo implements OnInit {
 
   onEdit(review: Review): void {
     console.log('✏️ Editando reseña:', review);
+    // PASO 1: Guardar el ID de la review que se está editando
     this.editingId.set(review.id);
+    // PASO 2: Guardar la imagen actual en el signal
     this.selectedImage.set(review.image || null);
+    // PASO 3: Cargar los datos en el formulario
     this.form.patchValue({
       title: review.title,
       review: review.review,
@@ -216,8 +220,8 @@ export class CrudDemo implements OnInit {
   }
 
   onDelete(id: string, title: string): void {
-    console.log('�🚨🚨 MÉTODO onDelete LLAMADO 🚨🚨🚨');
-    console.log('�🔍 Intentando eliminar - ID:', id, 'Tipo:', typeof id, 'Título:', title);
+    console.log('🚨🚨 MÉTODO onDelete LLAMADO 🚨🚨');
+    console.log('🔍 Intentando eliminar - ID:', id, 'Tipo:', typeof id, 'Título:', title);
     
     if (!confirm(`¿Seguro que quieres eliminar la reseña de "${title}"?`)) {
       console.log('❌ Eliminación cancelada por el usuario');
